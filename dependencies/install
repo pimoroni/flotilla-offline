@@ -20,3 +20,5 @@ if [ ! -f /usr/local/lib/libserialport.so ]; then
 fi
 
 chown root:staff /usr/local/lib/libserialport*
+
+ldconfig
