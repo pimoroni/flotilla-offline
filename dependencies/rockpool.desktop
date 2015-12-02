@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Exec=rockpool
+Icon=rockpool
+Terminal=false
+Name=Flotilla Rockpool
+Comment= Flotilla Rockpool flow programming tool
+Categories=Application;Education;Development;ComputerScience;
+MimeType=

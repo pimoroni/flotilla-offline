@@ -1,0 +1,569 @@
+@font-face {
+    font-family: 'Corki-TuscanRounded';
+    src: url('fonts/corki-tuscanrounded-webfont.eot');
+    src: url('fonts/corki-tuscanrounded-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/corki-tuscanrounded-webfont.woff') format('woff'),
+         url('fonts/corki-tuscanrounded-webfont.ttf') format('truetype'),
+         url('fonts/corki-tuscanrounded-webfont.svg#corkituscan_rounded') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'HelveticaNeue-Light';
+    src: url('fonts/HelveticaNeue-Light.eot');
+    src: url('fonts/HelveticaNeue-Light.eot') format('embedded-opentype'),
+         url('fonts/HelveticaNeue-Light.woff') format('woff'),
+         url('fonts/HelveticaNeue-Light.ttf') format('truetype'),
+         url('fonts/HelveticaNeue-Light.svg#HelveticaNeue-Light') format('svg');
+}
+
+@font-face {
+    font-family: 'HelveticaNeue-Medium';
+    src: url('fonts/helveticaneue-medium-webfont.eot');
+    src: url('fonts/helveticaneue-medium-webfont.eot') format('embedded-opentype'),
+         url('fonts/helveticaneue-medium-webfont.woff') format('woff'),
+         url('fonts/helveticaneue-medium-webfont.ttf') format('truetype'),
+         url('fonts/helveticaneue-medium-webfont.svg#helveticaneue-medium-webfont') format('svg');
+}
+
+@font-face {
+    font-family: 'flotilla';
+    src:url('fonts/flotilla.eot?-moe4l1');
+    src:url('fonts/flotilla.eot?#iefix-moe4l1') format('embedded-opentype'),
+        url('fonts/flotilla.woff?-moe4l1') format('woff'),
+        url('fonts/flotilla.ttf?-moe4l1') format('truetype'),
+        url('fonts/flotilla.svg?-moe4l1#icomoon') format('svg');
+
+    font-weight: normal;
+    font-style: normal;
+}
+
+html, body {
+    width:100%;
+    height:100%;
+    padding:0;
+    margin:0;
+}
+
+h2 {
+    font-family: 'Corki-TuscanRounded';
+    font-size: 29pt;
+    font-weight: 100;
+}
+
+.help-balloon {
+    text-align:center;
+    font-size:20px;
+    font-family: 'HelveticaNeue-Medium';
+}
+
+/* Initial host picker UI */
+.host-picker {
+    overflow:hidden;
+    display: block;
+    height:100%;
+}
+.progress {
+    position:relative;
+    display:block;
+    width:100%;
+    height:40px;
+}
+
+.progress span {
+    display:block;height:100%;
+    -webkit-transition:width 0.2s;
+}
+.progress strong {
+    display:block;
+    position:absolute;left:0;top:0;
+    width:100%;height:100%;
+    line-height:40px;
+    text-align:center;
+    font-size:20px;
+}
+.host {
+    float:left;
+    display:block;
+    width:200px;
+    height:200px;
+    border-radius:100px;
+    line-height:200px;
+    text-align:center;
+    font-size: 30px;
+}
+
+.main {
+    z-index: 0;
+    min-height:100%;position:relative;
+}
+
+.center { text-align: center; }
+.right { text-align: right; }
+
+#header {
+}
+
+#header .logo .sprite {
+    margin:30px 10px 0px 0px;
+}
+
+#header h2 {
+    margin:20px 10px;
+}
+
+.block { 
+    position: relative;
+    margin: 12px 0px;
+    height:44px;
+}
+
+.rule {
+    margin: 20px 0;
+}
+
+.graph, .pipe {
+}
+
+.graph {
+    height: 44px;
+    width: 100%;
+    position: absolute;
+    left: 50%;
+    top:0;
+    z-index:-10;
+}
+
+.pipe {
+    width: 44px;
+    position: absolute;
+    left: 50%;
+    margin-left:-22px;
+    z-index: -11;
+    border-bottom-right-radius: 22px;
+    border-top-right-radius: 22px;
+}
+
+.name {
+    height: 22px;
+    width: 200%;
+    position: absolute;
+    top: 52px;
+    z-index: -1;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    left: -50%;
+    text-shadow: 0px 1px 2px rgba(0,0,0,0.5);
+}
+
+.output .name {
+}
+
+.converter .name {
+}
+
+.decider .name {
+}
+
+.inspector {
+    height: 22px;
+    width: 44px;
+    position: absolute;
+    left: -56px;
+    top: 0px;
+    line-height:44px;
+    z-index: -1;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 22px;
+    text-align: right;
+    display:none;
+}
+
+.output .inspector {
+    display:block;
+    left: 56px;
+    text-align: left;
+}
+.input .inspector {
+    display:block;
+    text-align:right;
+}
+
+.modal {
+    position:absolute;
+    border-radius:10px;
+    padding:0px;
+    display:block;
+    box-shadow:0px 0px 20px rgba(0,0,0,0.5);
+    z-index:9001;
+    width:450px;
+    overflow:visible;
+    right:auto;
+    bottom:auto;
+    padding-bottom:15px;
+}
+
+.modal span.arrow {
+    pointer-events:none;
+    content:'';
+    display:block;
+    position:absolute;
+    border:25px solid transparent;
+    margin:0;
+}
+
+.modal span.arrow.left {
+}
+
+.modal span.arrow.right {
+}
+
+.modal span.arrow.hidden {
+    display:none;
+}
+
+.palette {
+    z-index: 9000;
+    display:block;
+    overflow:hidden;
+    width:90%;
+    margin:0 auto;
+}
+.palette header, .help-content header {
+    text-align:center;
+}
+.palette ul {
+    text-align:left;
+    padding:0;
+    margin:0;
+    list-style: none;
+    display:block;
+    overflow:hidden;
+}
+.palette h2 {
+    margin: 0px;
+    padding: 0px;
+    margin-top: 20px;
+    font-size:22pt;
+}
+.palette h2:after {
+    content:'';
+    height:4px;
+    display:block;
+    border-radius:2px;
+    margin-top:10px;
+}
+
+.palette h1, .help-content h1 {
+    text-align:center;
+    display:inline-block;
+    font-size:34pt;
+    padding:0px 25px;
+    font-family:'Corki-TuscanRounded';
+    margin:50px auto;
+    height:50px;
+    line-height:50px;
+    position:relative;
+    font-weight: normal;
+}
+
+.palette div {
+    float:left;
+    display:inline;
+    margin-right:20px;
+    margin-bottom:20px;
+    overflow:hidden;
+}
+.modal .palette h2 {display:none;}
+.modal .palette li {margin:0;}
+.modal .palette {
+    width:100%;
+    margin:0;
+}
+.modal .palette div {
+    margin-right:0px;
+    margin-bottom:0px;
+}
+
+.palette h2 span {
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    float:left;
+    display:block;
+    text-align:center;
+    font-size:80%;
+    line-height:30px;
+    margin-right:10px;
+}
+.palette li {
+    position:relative;
+    margin:0;padding:0;
+    list-style:none;
+    display:block;
+    text-align:center;
+    float:left;
+    /*margin:20px 20px 0px 0px;*/
+    width:90px;
+    height:130px;
+}
+.palette li.hasOptions .label:after {
+    content: '';
+    display:block;
+    width:0px;
+    margin:0 auto;
+    border:5px solid transparent;
+}
+.palette .icon {
+    position:relative;
+    width:70px;
+    height:70px;
+    display:block;
+    border-radius:50%;
+    margin:10px auto;
+    box-sizing: border-box;
+    cursor:pointer;
+}
+.palette .icon img {max-width:100%;width:100%;height:auto;}
+.palette .label {
+    font-family: 'HelveticaNeue-Medium';
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.2); 
+    font-weight:bold;
+    font-size:11pt;
+    font-weight: 100;
+    white-space:inherit;
+    display:block;
+}
+
+.fancybox-overlay {
+}
+.fancybox-outer, .fancybox-wrap, .fancybox-skin, .fancybox-inner {background:transparent;}
+.fancybox-close {display:none;}
+.fancybox-opened .fancybox-skin {background: transparent;-webkit-box-shadow:none;box-shadow:none;}
+
+#rules canvas          {
+    border-top-color:    rgba(255,255,255,0.9); /* strokeStyle */
+    border-bottom-color: rgba(255,255,255,0.1); /*  fillStyle  */
+
+    display:block;width:100%;height:44px;
+    background: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%, rgba(255,255,255,0) 1%, rgba(255,255,255,0) 47%, rgba(255,255,255,0.3) 48%, rgba(255,255,255,0.3) 52%, rgba(255,255,255,0) 53%, rgba(255,255,255,0) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop(1%,rgba(255,255,255,0)), color-stop(47%,rgba(255,255,255,0)), color-stop(48%,rgba(255,255,255,0.3)), color-stop(52%,rgba(255,255,255,0.3)), color-stop(53%,rgba(255,255,255,0)), color-stop(100%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,0) 1%,rgba(255,255,255,0) 47%,rgba(255,255,255,0.3) 48%,rgba(255,255,255,0.3) 52%,rgba(255,255,255,0) 53%,rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,0) 1%,rgba(255,255,255,0) 47%,rgba(255,255,255,0.3) 48%,rgba(255,255,255,0.3) 52%,rgba(255,255,255,0) 53%,rgba(255,255,255,0) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,0) 1%,rgba(255,255,255,0) 47%,rgba(255,255,255,0.3) 48%,rgba(255,255,255,0.3) 52%,rgba(255,255,255,0) 53%,rgba(255,255,255,0) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(255,255,255,0) 0%,rgba(255,255,255,0) 1%,rgba(255,255,255,0) 47%,rgba(255,255,255,0.3) 48%,rgba(255,255,255,0.3) 52%,rgba(255,255,255,0) 53%,rgba(255,255,255,0) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=0 ); /* IE6-9 */
+}
+
+/* Hack to set line and fill colours of graphs in CSS */
+#rules .generators canvas {
+    border-top-color:    rgba(0, 159, 227, 0.9); /* strokeStyle */
+    border-bottom-color: rgba(0, 159, 227, 0.2); /*  fillStyle  */
+}
+#rules .decider canvas {
+    border-top-color:    rgba(149, 30, 128, 0.9); /* strokeStyle */
+    border-bottom-color: rgba(149, 30, 128, 0.2); /*  fillStyle  */
+}
+#rules .converter canvas {
+    border-top-color:    rgba(229, 0, 81, 0.9); /* strokeStyle */
+    border-bottom-color: rgba(229, 0, 81, 0.2); /*  fillStyle  */
+}
+
+/* Fade out the end of the graph */
+#rules .graph:after {
+    content:'';
+    display:block;
+    width:100%;
+    height:44px;
+    position: absolute;
+    top:0px;
+    background: -moz-linear-gradient(left,  rgba(52,52,52,0) 0%, rgba(52,52,52,0) 44%, rgba(52,52,52,1) 97%, rgba(52,52,52,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(52,52,52,0)), color-stop(44%,rgba(52,52,52,0)), color-stop(97%,rgba(52,52,52,1)), color-stop(100%,rgba(52,52,52,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left,  rgba(52,52,52,0) 0%,rgba(52,52,52,0) 44%,rgba(52,52,52,1) 97%,rgba(52,52,52,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left,  rgba(52,52,52,0) 0%,rgba(52,52,52,0) 44%,rgba(52,52,52,1) 97%,rgba(52,52,52,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left,  rgba(52,52,52,0) 0%,rgba(52,52,52,0) 44%,rgba(52,52,52,1) 97%,rgba(52,52,52,1) 100%); /* IE10+ */
+    background: linear-gradient(to right,  rgba(52,52,52,0) 0%,rgba(52,52,52,0) 44%,rgba(52,52,52,1) 97%,rgba(52,52,52,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00343434', endColorstr='#343434',GradientType=1 ); /* IE6-9 */
+}
+
+.counts i {
+    font-style: normal;
+    text-align: left;
+    text-indent: 40px;
+    margin-right: 38px;
+    background-size: 160px 120px;
+    font-size: 80%;
+    padding: 0px;
+    width:30px;
+    height:30px;
+}
+
+.add-converter h2 {
+}
+
+.add-output h2 {
+}
+
+.add-converter h2 i.deciders {
+}
+
+.toggle i, .delete i {
+    margin:5px;
+}
+
+/* Fade out rules and hide graphs when off */
+#rules .rulegroup.off .rule {opacity:0.5;}
+#rules .rulegroup.off canvas {display:none;}
+
+
+.sprite {
+    background-image: url(spritesheet.png);
+    background-repeat: no-repeat;
+    display: block;
+    display: inline-block;
+    background-size: 264px 199px;
+    cursor:pointer;
+}
+
+.sprite img {max-width:100%;width:100%;height:auto;margin:0 auto;}
+
+.block .sprite {position: relative;}
+
+
+
+.sprite-block-corner { 
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    top: -98px;
+    position: absolute;
+    padding-top: 98px;
+    z-index: -5;
+    left: 50%;
+    margin-left: -22px;
+}
+
+.nudge .sprite-block-corner {
+    top: -146px;
+    padding-top: 146px;
+}
+
+
+
+
+.sprite-block-add {
+    width: 44px;
+    height: 44px;
+    background-position: -2px -2px;
+}
+
+.sprite-block-converter {
+    width: 52px;
+    height: 45px;
+    background-position: -50px -2px;
+}
+
+.sprite-block-decider {
+    width: 54px;
+    height: 46px;
+    background-position: -106px -2px;
+}
+
+.sprite-block-input {
+    width: 44px;
+    height: 44px;
+    background-position: -164px -2px;
+}
+
+.sprite-block-output {
+    width: 46px;
+    height: 46px;
+    background-position: -164px -50px;
+}
+
+.sprite-channel-delete {
+    width: 34px;
+    height: 34px;
+    background-position: -2px -50px;
+}
+
+.sprite-channel-off {
+    width: 34px;
+    height: 34px;
+    background-position: -2px -100px;
+}
+
+.sprite-channel-on {
+    width: 34px;
+    height: 34px;
+    background-position: -40px -100px;
+}
+
+
+.sprite-icon-flotilla {
+    width: 44px;
+    height: 44px;
+    background-position: -102px -151px;
+}
+
+.sprite-icon-label-converter {
+    width: 47px;
+    height: 46px;
+    background-position: -150px -151px;
+}
+
+.sprite-icon-label-decider {
+    width: 47px;
+    height: 46px;
+    background-position: -215px -3px;
+}
+
+.sprite-icon-label-input {
+    width: 46px;
+    height: 46px;
+    background-position: -214px -53px;
+}
+
+.sprite-icon-label-output {
+    width: 46px;
+    height: 46px;
+    background-position: -201px -103px;
+}
+
+.sprite-icon-load {
+    width: 34px;
+    height: 42px;
+    background-position: -40px -53px;
+}
+
+.sprite-icon-save {
+    width: 34px;
+    height: 42px;
+    background-position: -78px -53px;
+}
+
+.sprite-icon-setup {
+    width: 40px;
+    height: 34px;
+    background-position: -116px -53px;
+}
+
+.sprite-icon-add-converter {
+    background-position: -46px -60px;
+}
+
+.sprite-icon-add-decider {
+    background-position: -77px -59px;
+}
+
+.sprite-icon-add-input {
+    background-position:-1px -91px;
+}
+
+.sprite-icon-add-output {
+    background-position: -52px -151px;
+}

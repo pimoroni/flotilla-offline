@@ -1,0 +1,182 @@
+@import "structure.css";
+
+.sprite {
+    background-image: url(spritesheet-rockpool.png);
+ }
+
+body {
+	background-color:#00546d;
+	background-image:url('images/bg-waves.png');
+	background-attachment:fixed;
+    background-position: bottom center;
+    background-repeat: repeat-x;
+
+}
+
+body:before {
+    content: '';
+    background: top center url('images/bg-life.png') repeat-x;
+    background-size:1423px;
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: fixed;
+    z-index: -1;
+}
+body:after {
+    content: '';
+    background: bottom center url('images/background-kelp-distance.png') repeat-x;
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: fixed;
+    z-index: -1;
+    left:0;
+    top:0;
+    background-size:800px;
+}
+
+/* Initial host picker UI */
+
+.progress span {
+    background:#95c11f;
+}
+.progress strong {
+    color:#FFF;
+}
+.host {
+    background:#FFF;
+    color:#000;
+}
+
+.main {
+    min-height:100%;position:relative;
+    z-index:0;
+}
+
+.main:before {
+    content: '';
+    background: left center url('images/bg-left.png') repeat-y;
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: fixed;
+    z-index: -1;
+}
+
+.main:after {
+    content: '';
+    background: right center url('images/bg-right.png') repeat-y;
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: fixed;
+    z-index: -2;
+    left:0;top:0;
+}
+
+#header {
+    background:center bottom url('images/bg-sky.png') repeat-x;
+    height:185px;
+}
+
+#header h2 {
+	color:#00829A;
+}
+
+.help-balloon {
+    color:#FFF;
+}
+
+/* Rules */
+
+.name, .inspector {
+	color:#FFF;
+}
+
+.pipe {
+	border-radius:0;
+	padding:44px 0;
+	box-sizing:border-box;
+}
+.pipe span {
+	background:rgba(158,201,203,0.18);
+	width:100%;
+	height:100%;
+	display:block;
+	position: relative;
+}
+.pipe span:before, .pipe span:after {
+	content: '';
+	width:22px;
+	height:44px;
+	background:rgba(158,201,203,0.18);
+	position: absolute;
+	right:0px;
+}
+.pipe span:before {
+	top:-44px;
+	bottom:auto;
+	border-top-right-radius: 22px;
+}
+.pipe span:after {
+	bottom:-44px;
+	top:auto;
+	border-bottom-right-radius: 22px;
+}
+#rules canvas {background:none;}
+#rules .graph {
+	background:#9EC9CB;
+background: -moz-linear-gradient(left, rgba(158,201,203,0.5) 0%, rgba(158,201,203,0.18) 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(158,201,203,0.5)), color-stop(100%,rgba(158,201,203,0.18))); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(left, rgba(158,201,203,0.5) 0%,rgba(158,201,203,0.18) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(left, rgba(158,201,203,0.5) 0%,rgba(158,201,203,0.18) 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(left, rgba(158,201,203,0.5) 0%,rgba(158,201,203,0.18) 100%); /* IE10+ */
+background: linear-gradient(to right, rgba(158,201,203,0.5) 0%,rgba(158,201,203,0.18) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#809ec9cb', endColorstr='#2e9ec9cb',GradientType=1 ); /* IE6-9 */
+}
+
+#rules .graph:after {
+	display:none;
+}
+
+/* Overlays, Palettes and modals */
+
+.fancybox-overlay, .modal {
+	background-image:none;
+    background-color:rgba(0, 101, 122, 0.81);
+}
+.palette h1, .palette h2, .palette .label {
+	color:#FFFFFF;
+}
+.palette li {
+	-webkit-transition:background 0.1s linear;
+}
+.palette li:hover {
+	background:rgba(255,255,255,0.1);
+	border-radius:10px;
+	-webkit-transition:background 0s linear;
+}
+.palette div {
+}
+.modal .palette div {
+}
+.modal {
+	padding-bottom:0px;
+	border:3px solid #FFF;
+}
+
+.modal span.arrow.top {
+	border-color:transparent;
+    border-bottom-color: #FFF;
+}
+
+.modal span.arrow.left {
+	border-color:transparent;
+    border-right-color: #FFF;
+}
+
+.modal span.arrow.right {
+	border-color:transparent;
+    border-left-color: #FFF;
+}
