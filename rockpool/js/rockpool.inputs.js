@@ -20,16 +20,6 @@ rockpool.pressed={
     39: false
 };
 
-$(window).on('keydown',function(e){
-     rockpool.pressed[e.keyCode] = true;
-     //console.log('Pressed', e.keyCode)
-})
-
-$(window).on('keyup',function(e){
-     rockpool.pressed[e.keyCode] = false;
-     //console.log('Released', e.keyCode)
-})
-
 rockpool.inputs = {
     high: function () {
         this.name = "On"
@@ -69,7 +59,6 @@ rockpool.inputs = {
     },
     pattern: function () {
         this.name = "Pattern"
-        //this.sequence = [0]
         this.sindex = 0
         this.icon = "css/images/icons/icon-random.png"
         this.bgColor = rockpool.palette.blue
@@ -103,44 +92,97 @@ rockpool.inputs = {
     },
 }
 
-$(window).on('keydown',function(){
-    if( typeof(rockpool.inputs.keyboard) === 'function' ) return false;
+if (window.DeviceMotionEvent) {
+    rockpool.tilt = {x:0,y:0,z:0};
 
-    rockpool.inputs.keyboard = function () {
-        this.name = "Keyboard"
-        this.keys = []
-        this.icon = "css/images/icons/icon-keyboard.png"
+    function deviceMotionHandler(eventData) {
+      acceleration = eventData.accelerationIncludingGravity;
+      rockpool.tilt.x = (Math.min(Math.max(acceleration.x,-9.8),9.8) + 9.8) / 19.6;
+      rockpool.tilt.y = (Math.min(Math.max(acceleration.y,-9.8),9.8) + 9.8) / 19.6;
+      rockpool.tilt.z = (Math.min(Math.max(acceleration.z,-9.8),9.8) + 9.8) / 19.6;    
+    }
+
+    window.addEventListener('devicemotion', deviceMotionHandler, false);
+
+    rockpool.inputs.tilt = function() {
+        this.name = "Tilt"
+        this.icon = "css/images/icons/icon-sine.png"
         this.bgColor = rockpool.palette.blue
         this.category = rockpool.category.generators
 
         this.options = [
-                {category: 'Keyboard Key', name:"UP/W",     keys:[87, 38], icon: "css/images/icons/icon-keyboard-up.png"},
-                {category: 'Keyboard Key', name:"DOWN/S",   keys:[83, 40], icon: "css/images/icons/icon-keyboard-down.png"},
-                {category: 'Keyboard Key', name:"LEFT/A",   keys:[65, 37], icon: "css/images/icons/icon-keyboard-left.png"},
-                {category: 'Keyboard Key', name:"RIGHT/D",  keys:[68, 39], icon: "css/images/icons/icon-keyboard-right.png"},
-                {category: 'Keyboard Key', name:"0",        keys:[48], icon: "css/images/icons/icon-keyboard-number.png"},
-                {category: 'Keyboard Key', name:"1",        keys:[49], icon: "css/images/icons/icon-keyboard-number.png"},
-                {category: 'Keyboard Key', name:"2",        keys:[50], icon: "css/images/icons/icon-keyboard-number.png"},
-                {category: 'Keyboard Key', name:"3",        keys:[51], icon: "css/images/icons/icon-keyboard-number.png"},
-                {category: 'Keyboard Key', name:"4",        keys:[52], icon: "css/images/icons/icon-keyboard-number.png"},
-                {category: 'Keyboard Key', name:"5",        keys:[53], icon: "css/images/icons/icon-keyboard-number.png"},
-                {category: 'Keyboard Key', name:"6",        keys:[54], icon: "css/images/icons/icon-keyboard-number.png"},
-                {category: 'Keyboard Key', name:"7",        keys:[55], icon: "css/images/icons/icon-keyboard-number.png"},
-                {category: 'Keyboard Key', name:"8",        keys:[56], icon: "css/images/icons/icon-keyboard-number.png"},
-                {category: 'Keyboard Key', name:"9",        keys:[57], icon: "css/images/icons/icon-keyboard-number.png"},
-            ]
+            {category: 'Tilt', name: 'X', icon: "css/images/icons/icon-sine.png"},
+            {category: 'Tilt', name: 'Y', icon: "css/images/icons/icon-sine.png"},
+            {category: 'Tilt', name: 'Z', icon: "css/images/icons/icon-sine.png"},
+        ]
+
         this.get = function(options){
-            var x = options ? options.keys.length : this.keys.length
-            while(x--){
-                if(rockpool.pressed[options ? options.keys[x] : this.keys[x]]){
-                    return 1.0
-                }
+            switch(options.name){
+                case 'X':
+                    return rockpool.tilt.x;
+                case 'Y':
+                    return rockpool.tilt.y;
+                case 'Z':
+                    return rockpool.tilt.z;
             }
-            return 0.0
         }
     }
-    rockpool.updatePalettes();
-    rockpool.generatePalette('input');
+
+        rockpool.updatePalettes();
+        rockpool.generatePalette('input');
+}
+
+rockpool.enable_keyboard = function(){
+
+    $(window).on('keydown',function(){
+        if( typeof(rockpool.inputs.keyboard) === 'function' ) return false;
+
+        $(window).off('keydown');
+        
+        $(window).on('keydown',function(e){
+             rockpool.pressed[e.keyCode] = true;
+        });
+
+        $(window).on('keyup',function(e){
+             rockpool.pressed[e.keyCode] = false;
+        });
+
+        rockpool.inputs.keyboard = function () {
+            this.name = "Keyboard"
+            this.keys = []
+            this.icon = "css/images/icons/icon-keyboard.png"
+            this.bgColor = rockpool.palette.blue
+            this.category = rockpool.category.generators
+
+            this.options = [
+                    {category: 'Keyboard Key', name:"UP/W",     keys:[87, 38], icon: "css/images/icons/icon-keyboard-up.png"},
+                    {category: 'Keyboard Key', name:"DOWN/S",   keys:[83, 40], icon: "css/images/icons/icon-keyboard-down.png"},
+                    {category: 'Keyboard Key', name:"LEFT/A",   keys:[65, 37], icon: "css/images/icons/icon-keyboard-left.png"},
+                    {category: 'Keyboard Key', name:"RIGHT/D",  keys:[68, 39], icon: "css/images/icons/icon-keyboard-right.png"},
+                    {category: 'Keyboard Key', name:"0",        keys:[48], icon: "css/images/icons/icon-keyboard-number.png"},
+                    {category: 'Keyboard Key', name:"1",        keys:[49], icon: "css/images/icons/icon-keyboard-number.png"},
+                    {category: 'Keyboard Key', name:"2",        keys:[50], icon: "css/images/icons/icon-keyboard-number.png"},
+                    {category: 'Keyboard Key', name:"3",        keys:[51], icon: "css/images/icons/icon-keyboard-number.png"},
+                    {category: 'Keyboard Key', name:"4",        keys:[52], icon: "css/images/icons/icon-keyboard-number.png"},
+                    {category: 'Keyboard Key', name:"5",        keys:[53], icon: "css/images/icons/icon-keyboard-number.png"},
+                    {category: 'Keyboard Key', name:"6",        keys:[54], icon: "css/images/icons/icon-keyboard-number.png"},
+                    {category: 'Keyboard Key', name:"7",        keys:[55], icon: "css/images/icons/icon-keyboard-number.png"},
+                    {category: 'Keyboard Key', name:"8",        keys:[56], icon: "css/images/icons/icon-keyboard-number.png"},
+                    {category: 'Keyboard Key', name:"9",        keys:[57], icon: "css/images/icons/icon-keyboard-number.png"},
+                ]
+            this.get = function(options){
+                var x = options ? options.keys.length : this.keys.length
+                while(x--){
+                    if(rockpool.pressed[options ? options.keys[x] : this.keys[x]]){
+                        return 1.0
+                    }
+                }
+                return 0.0
+            }
+        }
+        rockpool.updatePalettes();
+        rockpool.generatePalette('input');
 
 
-})
+    })
+}

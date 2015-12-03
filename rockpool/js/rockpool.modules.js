@@ -295,24 +295,7 @@ rockpool.module_handlers['matrix'] = {
                 this.data.image = options.fn(value);
             }
 
-        },/*
-        'number': function() {
-            this.name = "Number"
-            this.module_type = 'green'
-            this.icon = "css/images/icons/icon-matrix.png"
-            this.bgColor = rockpool.palette.green
-            this.data = {image:[0, 0, 0, 0, 0, 0, 0, 0]}
-
-            this.set = function (value) { this.data.image = matrix_font[Math.ceil(value * 9).toString().charCodeAt(0)] }
         },
-        'letter': function() {
-            this.name = "Letter"
-            this.module_type = 'green'
-            this.icon = "css/images/icons/icon-matrix.png"
-            this.bgColor = rockpool.palette.green
-            this.data = {image:[0, 0, 0, 0, 0, 0, 0, 0]}
-            this.set = function (value) { this.data.image = matrix_font[ 97 + Math.ceil(value * 25) ] }
-        },*/
         'brightness': function() {
             this.name = "Brightness"
             this.module_type = 'green'
@@ -437,16 +420,6 @@ rockpool.module_handlers['slider'] = {
         this.bgColor = rockpool.palette.red
 			this.data = {position:0}
 			this.get = function () { return this.data.position }
-		}
-	},
-	'outputs': {
-		'brightness': function() {
-			this.name = "Brightness"
-        this.module_type = 'red'
-        this.icon = "css/images/icons/icon-light.png"
-        this.bgColor = rockpool.palette.red
-			this.data = {brightness:0}
-			this.set = function (value) { this.data.brightness = value }
 		}
 	}
 }

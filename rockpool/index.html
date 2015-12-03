@@ -13,7 +13,7 @@
         <div class="main">
             <div style="margin: 0px auto;width:100%;">
                 <div id="header" class="pure-g">
-                    <div class="pure-u-1-12 center logo"><i class="sprite sprite-icon-flotilla"></i><i class="sprite sprite-icon-load"></i></div>
+                    <div class="pure-u-1-12 center logo"><i class="sprite sprite-icon-flotilla"></i></div>
                     <div class="pure-u-1-6 center add-input"><h2>Inputs</h2></div>
                     <div class="pure-u-1-6 center"></div>
                     <div class="pure-u-1-6 center add-converter"><h2>Converters</h2></div>
@@ -36,14 +36,13 @@
                         <li>Converters change a value, either by tweaking it directly or comparing it to another value</li>
                     </ul>
                 </li>
-                <li>To add a rule, simply click Inputs, Converters or Outputs and pick a starting point</li>
+                <li>To add a rule, click Inputs, Converters or Outputs and pick a starting point</li>
                 <li>Next, click one of the slots on the rule to change what it does!</li>
                 <li>Some converters want a comparison value, this will automatically create a new rule which you can tweak like any other.</li>
             </ul>
         </div>
     <script src="js/lib/jquery-2.1.1.min.js"></script>
     <script src="js/lib/fastclick.js"></script>
-    <script src="js/bootstrap.min.js"></script>
     <script src="js/rockpool.js"></script>
     <script src="js/rockpool.languify.js"></script>
     <script src="js/socket.io.min.js"></script>
@@ -55,250 +54,16 @@
     <script src="js/rockpool.palette.js"></script>
     <script src="js/rockpool.module.js"></script>
     <script src="js/rockpool.modules.js"></script>
-    <script src="js/rockpool.get-ip.js"></script>
     <script src="js/rockpool.client.js"></script>
     <script src="js/rockpool.save.js"></script>
     <script src="js/rockpool.variables.js"></script>
-    <script src="js/rockpool.tools.js"></script>
     <script src="js/rockpool.find-hosts.worker.js"></script>
 
     <script src="js/lib/jquery.fancybox.min.js"></script>
 
     <script>
         "use strict";
-        var save_list = ['all-the-converters','tree','test'];
-        $(function () {
-
-
-            $(window).trigger('resize');
-
-            $(document).on('click','.starfish',function(){
-                new rockpool.rule()
-            });
-            $(document).on('click','.jellyfish',function(){
-                rockpool.add('tool')
-            });
-
-            $('.add-input').on('click',function(){
-                rockpool.add('input')
-            }).find('h2');
-
-            $('.add-output').on('click',function(){
-                rockpool.add('output')
-            }).find('h2');
-
-            $('.add-converter').on('click',function(){
-                rockpool.add('converter')
-            }).find('h2');
-
-            $('.help').on('click',function(){
-                rockpool.prompt($('.help-content').clone().show().on('click',function(){
-
-                    $.fancybox.close()
-                    $(this).remove()
-
-                }))
-            });
-
-            $('.sprite-icon-load').on('click',function(e){
-                e.preventDefault();
-
-                var load_save = $('<div>').addClass('palette').addClass('saves');
-                load_save.append('<header><h1>Load</h1></header>');
-
-                var saves = $('<div>').addClass('saves').appendTo(load_save);
-
-                saves.append('<ul>').on('click','li',function(e){
-                    var file_name = $(this).data('filename');
-                    rockpool.loadFromFile(file_name);
-                });
-
-                for( var x = 0; x < save_list.length; x++ ){
-
-                    var file_name = save_list[x];
-                    $('<li><span class="icon" style="color: rgb(78, 192, 223);"><img src="css/images/icons/icon-on.png"></span><span class="label">' + file_name + '</span></li>').data('filename',file_name).appendTo(saves.find('ul'));
-
-                }
-
-                rockpool.prompt(load_save);
-            });
-
-
-            /* resize chart canvases when the window resizes */
-            $(window).resize(function () {
-                rockpool.respond()
-            });
-
-            if(window.navigator.standalone){
-                document.documentElement.requestFullscreen();
-            }
-
-            $(document).ready(function(){
-
-                FastClick.attach(document.body);
-
-                $.fancybox.defaults.padding = 0
-                $.fancybox.defaults.margin = 0
-                $.fancybox.defaults.modal = true
-                $.fancybox.defaults.autoCenter = false
-                $.fancybox.defaults.closeBtn = false
-                $.fancybox.defaults.autoSize = false
-                $.fancybox.defaults.width = "auto"
-                $.fancybox.defaults.height = "auto"
-                $.fancybox.defaults.scrolling = "no"
-                $.fancybox.defaults.fitToView = false
-                $.fancybox.defaults.fixed = true
-                $.fancybox.defaults.topRatio = 0
-                $.fancybox.defaults.leftRatio = 0
-                //rockpool.tool('Clock Pulse');
-                //rockpool.tool('Clock Divider')
-                
-                $('[data-translate]').each(function(){
-                    $(this).html( rockpool.languify( $(this).html() ) );
-                });
-
-                /*rule.setHandler(2, new rockpool.converters.greaterThan)
-                rule.getChild(2).setInputHandler(new rockpool.inputs.low)
-
-                var rule_a = new rockpool.rule();
-                rule_a.setInputHandler(new rockpool.inputs.random)*/
-
-
-                /*s = rockpool.get_module(0,'switch')
-                s.activate()
-
-                var rule = rockpool.addRule(new rockpool.rule())
-                rule.input = rockpool.inputs.switch_0_button
-                rule.converters[0] = new rockpool.converters.halve
-                rule.converters[1] = new rockpool.converters.invert
-                rule.converters[2] = new rockpool.converters.greaterThan(0.6)*/
-
-    /*
-                var rule = rockpool.addRule(new rockpool.rule())
-                rule.input = new rockpool.inputs.sin
-                rule.converters[0] = new rockpool.converters.greaterThan(0.5)
-                rule.converters[1] = new rockpool.converters.invert
-
-                var rule = rockpool.addRule(new rockpool.rule())
-                rule.input = new rockpool.inputs.random
-                rule.converters[0] = new rockpool.converters.halve
-                rule.converters[1] = new rockpool.converters.invert
-                rule.converters[2] = new rockpool.converters.greaterThan(0.6)
-
-                var rule = rockpool.addRule(new rockpool.rule())
-                rule.input = new rockpool.inputs.sin
-                rule.converters[0] = new rockpool.converters.greaterThan(0.5)
-                rule.converters[1] = new rockpool.converters.invert
-
-                var rule = rockpool.addRule(new rockpool.rule())
-                rule.input = new rockpool.inputs.sin
-                rule.converters[0] = new rockpool.converters.greaterThan(0.5)
-                rule.converters[1] = new rockpool.converters.invert*/
-
-                //rockpool.run()
-
-                rockpool.addCommonSubnetTargets();
-                rockpool.addScanTarget('127.0.0.1');
-                rockpool.addScanTarget('192.168.0.136');
-
-                var history = rockpool.loadConnectionHistory();
-                for(var host in history){
-                    console.log('Adding previous host: ' + history[host])
-                    rockpool.addScanTarget(history[host]);
-                }
-                rockpool.findHosts();
-
-                //rockpool.tool('Empty');
-
-                //rockpool.loadFromFile('all-the-converters');
-              
-
-            })
-
-        });
-
-        var fakeHost = function(){
-            rockpool.closePrompt();
-
-            rockpool.run();
-
-            rockpool.getModule(0, 0,'dial').activate()
-            rockpool.getModule(0, 1,'motor').activate()
-            rockpool.getModule(0, 2,'motor').activate()
-            rockpool.getModule(0, 3,'joystick').activate()
-            rockpool.updatePalettes();
-            
-            var pattern = new rockpool.inputs['pattern'];
-
-            var dial = setInterval(function(){
-                var value = pattern.options[0].sequence()*1023;
-                rockpool.getModule(0, 0,'dial').receive([value]);
-            },500);
-
-            var joystick = setInterval(function(){
-                var x = pattern.options[1].sequence()*100;
-                var y = pattern.options[1].sequence()*100;
-                var b = pattern.options[1].sequence()*100;
-                rockpool.getModule(0, 3,'joystick').receive([x,y,b]);
-            },500);
-
-        }
-
-        //fakeHost();
-
-        //new rockpool.rule().start();
-
-        var fn_introducton = function(){
-            $('.palettes .palette.converter .deciders').hide();
-            $('.palettes .palette.output .variables').hide();
-            $('.palettes .palette.input .variables').hide();
-
-            $('.palettes .palette.input > div.module').hide();
-            $('.palettes .palette.output > div.module').hide();
-
-            setTimeout(function(){
-
-                rockpool.rules[0].input.tooltip('<p>Click to add an input!<br /><small>Inputs give us a signal to play with.</small></p>');
-
-            }, 500);
-
-
-            rockpool.rules[0].addEventHandler('on_set_input_handler',function(rule){
-                setTimeout(function(){
-
-                    rule.output.tooltip("<p>Now, click to add an output!<br /><small>This is where we'll send our signal!</small></p>");
-
-                }, 500);
-            });
-
-            rockpool.rules[0].addEventHandler('on_set_output_handler',function(rule){
-                setTimeout(function(){
-
-                    rule.converters[1].tooltip("<p>Finally, add a converter!<br /><small>These can change our signal in some way.</small></p>");
-
-                }, 500);
-            });
-
-            rockpool.rules[0].addEventHandler('on_set_converter1_handler',function(rule){
-                rule.addEventHandler('on_set_converter1_handler',function(rule){
-
-                    rule.clearEventHandler('on_set_converter1_handler');
-                    setTimeout(function(){
-                        rule.getConverter(1).child.input.tooltip('<p>Now feed in another signal!</p>');
-                    }, 500);
-                });
-                setTimeout(function(){
-
-                    $('.palettes .palette.converter .converters').hide();
-                    $('.palettes .palette.converter .deciders').show();
-                    rule.converters[1].tooltip("<p>Great! Now let's try something more advanced.<br /><small>Add a decider...</small></p>");
-
-                }, 500);
-            });
-        }
-
-        //fn_introducton();
-
+        $(function () {rockpool.initialize()});
     </script>
     </body>
 </html>

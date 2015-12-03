@@ -2,10 +2,10 @@ var rockpool = rockpool || {};
 
 rockpool.lang_missing = []
 
-rockpool.lang = 'en-EN';
+rockpool.lang = 'en';
 
 rockpool.languify = function(string){
-	if( rockpool.lang == 'en-EN' ){
+	if( rockpool.lang == 'en' ){
 		return string;
 	}
 
@@ -19,7 +19,8 @@ rockpool.languify = function(string){
 
 rockpool.strings = {}
 
-rockpool.strings['de-DE'] = {
+rockpool.strings['de'] = {
+	'Pick Your Dock': 'Pick Sie Dock',
 	'Help': 'Hilfe',
 	'Inputs': 'Eing&auml;nge',
 	'Outputs': 'Ausg&auml;nge',

@@ -44,9 +44,18 @@ body:after {
 .progress strong {
     color:#FFF;
 }
-.host {
+.host-picker .host {
     background:#FFF;
     color:#000;
+}
+
+.host-picker .custom {
+    background:#00546d;
+    color:#FFF;
+}
+
+.host-picker .custom input {
+    color:#333;
 }
 
 .main {

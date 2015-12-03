@@ -178,12 +178,6 @@ rockpool.registerOutput = function( host, channel, code, name, handler ) {
     rockpool.outputs[[host,code,channel,name].join('_')] = handler;
 }
 
-/*
-rockpool.registerConverter = function( host, channel, code, name, handler ) {
-    rockpool.converters[[code,channel,name].join('_')] = handler;
-}
-*/
-
 rockpool.getModule = function(host_idx, channel_idx, module_code) {
     var id = [host_idx,channel_idx,module_code].join('_');
 
@@ -204,4 +198,86 @@ rockpool.getModule = function(host_idx, channel_idx, module_code) {
     }
 
     return module;
+}
+
+rockpool.initialize = function(){
+    $(window).trigger('resize');
+
+    $('.add-input').on('click',function(){
+        rockpool.add('input')
+    }).find('h2');
+
+    $('.add-output').on('click',function(){
+        rockpool.add('output')
+    }).find('h2');
+
+    $('.add-converter').on('click',function(){
+        rockpool.add('converter')
+    }).find('h2');
+
+    $('.help').on('click',function(){
+        rockpool.prompt($('.help-content').clone().show().on('click',function(){
+
+            $.fancybox.close()
+            $(this).remove()
+
+        }))
+    });
+
+    $('.sprite-icon-load').on('click',function(e){
+        e.preventDefault();
+
+        var load_save = $('<div>').addClass('palette').addClass('saves');
+        load_save.append('<header><h1>Load</h1></header>');
+
+        var saves = $('<div>').addClass('saves').appendTo(load_save);
+
+        saves.append('<ul>').on('click','li',function(e){
+            var file_name = $(this).data('filename');
+            rockpool.loadFromFile(file_name);
+        });
+
+        for( var x = 0; x < save_list.length; x++ ){
+
+            var file_name = save_list[x];
+            $('<li><span class="icon" style="color: rgb(78, 192, 223);"><img src="css/images/icons/icon-on.png"></span><span class="label">' + file_name + '</span></li>').data('filename',file_name).appendTo(saves.find('ul'));
+
+        }
+
+        rockpool.prompt(load_save);
+    });
+
+
+    /* resize chart canvases when the window resizes */
+    $(window).resize(function () {
+        rockpool.respond()
+    });
+
+    if(window.navigator.standalone){
+        document.documentElement.requestFullscreen();
+    }
+
+    FastClick.attach(document.body);
+
+    $.fancybox.defaults.padding = 0
+    $.fancybox.defaults.margin = 0
+    $.fancybox.defaults.modal = true
+    $.fancybox.defaults.autoCenter = false
+    $.fancybox.defaults.closeBtn = false
+    $.fancybox.defaults.autoSize = false
+    $.fancybox.defaults.width = "auto"
+    $.fancybox.defaults.height = "auto"
+    $.fancybox.defaults.scrolling = "no"
+    $.fancybox.defaults.fitToView = false
+    $.fancybox.defaults.fixed = true
+    $.fancybox.defaults.topRatio = 0
+    $.fancybox.defaults.leftRatio = 0
+    
+    $('[data-translate]').each(function(){
+        $(this).html( rockpool.languify( $(this).html() ) );
+    });
+
+    rockpool.addCommonTargets();
+    rockpool.addPreviousTargets();
+    rockpool.findHosts();
 }
