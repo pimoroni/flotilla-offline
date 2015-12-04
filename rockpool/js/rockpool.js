@@ -56,6 +56,10 @@ rockpool.guid = 0;
         };
 }());
 
+rockpool.useAnimationFrame = false;
+
+window.requestAnimationFrame(function(){rockpool.useAnimationFrame = true})
+
 rockpool.getGUID = function(){
     rockpool.guid++;
     return rockpool.guid;
@@ -101,7 +105,9 @@ rockpool.run = function () {
     rockpool.generatePalette('converter');
     rockpool.updatePalettes();
 
-    rockpool.renderLoop();
+    if(rockpool.useAnimationFrame){
+        rockpool.renderLoop();
+    }
     setInterval(rockpool.updateLoop, 100);
 }
 
@@ -113,10 +119,15 @@ rockpool.getTime = function () {
 rockpool.updateLoop = function() {
     rockpool.update();
     rockpool.sync();
+    if(!rockpool.useAnimationFrame){
+        rockpool.renderLoop();
+    }
 };
 
 rockpool.renderLoop = function () {
-    requestAnimationFrame(rockpool.renderLoop);
+    if (rockpool.useAnimationFrame) {
+        requestAnimationFrame(rockpool.renderLoop);
+    }
 
     var now = rockpool.getTime();
 
