@@ -1,18 +1,26 @@
 #!/usr/bin/python
 
+import socket
 import SimpleHTTPServer
 import SocketServer
 import webbrowser
 
 PORT = 8000
+serve = False
 
-Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
+try:
+    Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
 
-httpd = SocketServer.TCPServer(("", PORT), Handler)
+    httpd = SocketServer.TCPServer(("", PORT), Handler)
 
-print("Flotilla Rockpool running on http://127.0.0.1:{port}".format(port=PORT))
+    print("Flotilla Rockpool running on http://127.0.0.1:{port}".format(port=PORT))
+    serve = True
+except socket.error:
+    print("Flotilla Rockpool already running on http://127.0.0.1:{port}".format(port=PORT))
+
 
 print("Launching Browser")
 webbrowser.open("http://127.0.0.1:{port}".format(port=PORT), new=1, autoraise=True)
 
-httpd.serve_forever()
+if serve:
+    httpd.serve_forever()
