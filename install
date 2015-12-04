@@ -1,5 +1,7 @@
 #!/bin/bash
 
+HOME=/home/$SUDO_USER
+
 if [ $(id -u) -ne 0 ]; then
   printf "Install must be run as root. Try 'sudo ./install'\n"
   exit 1
@@ -22,19 +24,20 @@ else
 
 fi;
 
-
-if [ ! -f ~/.config/autostart/flotilla.desktop ]; then
+if [ ! -f $HOME/.config/autostart/flotilla.desktop ]; then
 
   printf "Setting up autostart...\n"
-  mkdir -p ~/.config/autostart
-  cp dependencies/flotilla.desktop ~/.config/autostart/
+  mkdir -p $HOME/.config/autostart
+  cp dependencies/flotilla.desktop $HOME/.config/autostart/
 
 else
 
   printf "Autostart already configured. Updating...\n"
-  cp dependencies/flotilla.desktop ~/.config/autostart/
+  cp dependencies/flotilla.desktop $HOME/.config/autostart/
 
 fi
+
+chown -R $SUDO_USER:pi $HOME/.config
 
 printf "Installing Rockpool...\n"
 
