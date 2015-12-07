@@ -92,17 +92,8 @@ rockpool.inputs = {
     },
 }
 
-if (window.DeviceMotionEvent) {
+if(window.DeviceMotionEvent) {
     rockpool.tilt = {x:0,y:0,z:0};
-
-    function deviceMotionHandler(eventData) {
-      acceleration = eventData.accelerationIncludingGravity;
-      rockpool.tilt.x = (Math.min(Math.max(acceleration.x,-9.8),9.8) + 9.8) / 19.6;
-      rockpool.tilt.y = (Math.min(Math.max(acceleration.y,-9.8),9.8) + 9.8) / 19.6;
-      rockpool.tilt.z = (Math.min(Math.max(acceleration.z,-9.8),9.8) + 9.8) / 19.6;    
-    }
-
-    window.addEventListener('devicemotion', deviceMotionHandler, false);
 
     rockpool.inputs.tilt = function() {
         this.name = "Tilt"
@@ -127,9 +118,6 @@ if (window.DeviceMotionEvent) {
             }
         }
     }
-
-        rockpool.updatePalettes();
-        rockpool.generatePalette('input');
 }
 
 rockpool.enable_keyboard = function(){
@@ -180,8 +168,8 @@ rockpool.enable_keyboard = function(){
                 return 0.0
             }
         }
-        rockpool.updatePalettes();
-        rockpool.generatePalette('input');
+        if(rockpool.updatePalettes) rockpool.updatePalettes();
+        if(rockpool.generatePalette) rockpool.generatePalette('input');
 
 
     })

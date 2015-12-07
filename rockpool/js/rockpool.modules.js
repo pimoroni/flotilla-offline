@@ -215,21 +215,37 @@ rockpool.module_handlers['weather'] = {
         'temperature': function(){
             this.name = "Temperature"
             this.module_type = 'blue'
-            this.icon = "css/images/icons/icon-weather.png"
+            this.icon = "css/images/icons/icon-default.png"
             this.bgColor = rockpool.palette.blue
             this.data = {temperature:0}
             this.get = function(){
-                return (this.data.temperature/10) > 60 ? 1 : (this.data.vis.temperature/10/60);
+                var highest = 40.00;
+                var lowest = 10.00;
+                var temp = this.data.temperature / 100.00;
+
+                if(temp > temp) {temp = highest}
+
+                var output_temp = (temp - lowest) / (highest-lowest);
+
+                return output_temp;
             }
         },
         'pressure': function(){
             this.name = "Pressure"
             this.module_type = 'blue'
-            this.icon = "css/images/icons/icon-weather.png"
+            this.icon = "css/images/icons/icon-default.png"
             this.bgColor = rockpool.palette.blue
             this.data = {pressure:0}
             this.get = function(){
-                return (this.data.temperature/10) > 2000 ? 1 : (this.data.vis.temperature/10/2000);
+                var highest = 108.00;
+                var lowest = 90.00;
+                var pressure = this.data.pressure / 1000.00;
+
+                if(pressure > highest) {pressure = highest}
+
+                var output_pressure = (pressure - lowest) / (highest-lowest);
+
+                return output_pressure;
             }
         }
     }

@@ -15,19 +15,20 @@ rockpool.host_picker = $('<div>').addClass('host-picker palette')
         e.stopPropagation();
         rockpool.stopScan();
         var host = $(this).data('host');
-        rockpool.connect(host, rockpool.port);
         rockpool.closePrompt();
+        rockpool.connect(host, rockpool.port);
     })
     .on('click','.custom a',function(e){
         e.preventDefault();
         e.stopPropagation();
         var host = $(this).parent().find('input').val();
         rockpool.stopScan();
-        rockpool.connect(host, rockpool.port);
         rockpool.closePrompt();
+        rockpool.connect(host, rockpool.port);
     })
     .append('<header><h1>' + rockpool.languify('Pick Your Dock') + '</h1></header>')
-    .append('<div class="progress"><strong>' + rockpool.languify('Scanning') + '</strong><span></span></div>');
+    .append('<div class="progress"><strong>' + rockpool.languify('Scanning') + '</strong><span></span></div>')
+    .append('<div class="custom"><p>Enter IP address:</p><input type="text" value="127.0.0.1"><a href="#">Connect<a></div>');
 
 rockpool.addHost = function(host, details){
     console.log('Adding valid host', host, details);
@@ -105,22 +106,15 @@ rockpool.addCommonTargets = function(){
 
 rockpool.findHosts = function(){
 
-
-
     var progress_total = 0;
 
     rockpool.resetHosts();
 
     rockpool.prompt(rockpool.host_picker, false);
 
-
-    var custom = $('<div class="custom"><p>Enter IP address:</p><input type="text" value="127.0.0.1"><a href="#">Connect<a></div>');
-    custom.appendTo(rockpool.host_picker);
-
-
     var history = rockpool.loadConnectionHistory();
     for(var host in history){
-        custom.find('input').val(history[host]);
+        rockpool.host_picker.find('.custom input').val(history[host]);
         break;
     }
 
@@ -262,17 +256,30 @@ rockpool.isConnected = function(){
 
 rockpool.connect = function(host, port){
 
-    rockpool.addToConnectionHistory(host);
+    var prompt = $("<div>")
+        .addClass('host-picker palette')
+        .append('<header><h1>' + rockpool.languify('Connecting...') + '</h1></header>');
+
+    rockpool.prompt(prompt,false);
+
     rockpool.socket = new WebSocket("ws://" + host + ':' + port + "/");
     rockpool.socket.onopen = function() { 
         console.log('Successfully connected to ' + host); rockpool.socket.send('ready'); 
+
+        rockpool.addToConnectionHistory(host);
+
         rockpool.enable_keyboard();
         if(typeof(rockpool.on_connect) === "function"){
             rockpool.on_connect();
         }
+        rockpool.closePrompt();
     };
     rockpool.socket.onmessage = function(event) { rockpool.parseCommand(event.data); return; };
-    rockpool.socket.onerror = function(event) { console.log('Socket Error',event) };
+    rockpool.socket.onerror = function(event) {
+        console.log('Socket Error',event);
+        rockpool.closePrompt();
+        rockpool.findHosts();
+     };
     rockpool.run();
 }
 
