@@ -3,8 +3,8 @@
 HOME=/home/$SUDO_USER
 
 if [ $(id -u) -ne 0 ]; then
-  printf "Install must be run as root. Try 'sudo ./install'\n"
-  exit 1
+    printf "Install must be run as root. Try 'sudo ./install'\n"
+    exit 1
 fi
 
 printf "Installing dependencies...\n"
@@ -13,28 +13,20 @@ bash install
 cd ..
 
 if [ ! -f /usr/bin/flotilla ]; then
-
-  printf "Installing Flotilla daemon...\n"
-  cp flotilla /usr/bin/flotilla
-
+    printf "Installing Flotilla daemon...\n"
+    cp flotilla /usr/bin/flotilla
 else
-
-  printf "Flotilla already installed. Updating...\n"
-  cp flotilla /usr/bin/flotilla
-
-fi;
+    printf "Flotilla already installed. Updating...\n"
+    cp flotilla /usr/bin/flotilla
+fi
 
 if [ ! -f $HOME/.config/autostart/flotilla.desktop ]; then
-
-  printf "Setting up autostart...\n"
-  mkdir -p $HOME/.config/autostart
-  cp dependencies/flotilla.desktop $HOME/.config/autostart/
-
+    printf "Setting up autostart...\n"
+    mkdir -p $HOME/.config/autostart
+    cp dependencies/flotilla.desktop $HOME/.config/autostart/
 else
-
-  printf "Autostart already configured. Updating...\n"
-  cp dependencies/flotilla.desktop $HOME/.config/autostart/
-
+    printf "Autostart already configured. Updating...\n"
+    cp dependencies/flotilla.desktop $HOME/.config/autostart/
 fi
 
 chown -R $SUDO_USER:pi $HOME/.config

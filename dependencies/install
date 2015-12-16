@@ -16,16 +16,13 @@ if [ $(id -u) -ne 0 ]; then
 fi
 
 if apt_pkg_req "libboost-system1.55.0"; then
-    echo ""
-    echo "Updating package indexes..."
+    printf "Updating package indexes..."
     sudo apt-get update
-    echo ""    
-    echo "Installing required packages..."
     sudo apt-get --yes --force-yes install libboost-system1.55.0
 fi
 
 if [ -f /usr/local/lib/libserialport.so.0.0.0 ]; then
-    echo "Dependencies already installed. Updating..."
+    printf "Dependencies already installed. Updating...\n"
 fi
 
 cp libs/libserialport* /usr/local/lib/
