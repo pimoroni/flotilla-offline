@@ -64,16 +64,34 @@ if [ ! -f /usr/bin/flotilla ]; then
     printf "Installing Flotilla daemon...\n"
     if ! raspbian_old; then
         cp flotilla /usr/bin/flotilla
+        chmod +x /usr/bin/flotilla
     else
         cp flotilla-wheezy /usr/bin/flotilla
+        chmod +x /usr/bin/flotilla
     fi
 else
     printf "Flotilla already installed. Updating...\n"
     if ! raspbian_old; then
         cp flotilla /usr/bin/flotilla
+        chmod +x /usr/bin/flotilla
     else
         cp flotilla-wheezy /usr/bin/flotilla
+        chmod +x /usr/bin/flotilla
     fi
+fi
+
+if [ ! -f /etc/init.d/flotillad ]; then
+    printf "Setting up init script...\n"
+    cp dependencies/flotillad /etc/init.d/
+    chmod +x /etc/init.d/flotillad
+    update-rc.d flotillad defaults
+    /etc/init.d/flotillad start &
+else
+    printf "Init script already on system. Updating...\n"
+    cp dependencies/flotillad /etc/init.d/
+    chmod +x /etc/init.d/flotillad
+    update-rc.d flotillad defaults
+    /etc/init.d/flotillad restart &
 fi
 
 if [ ! -f $HOME/.config/autostart/flotilla.desktop ]; then
@@ -95,7 +113,6 @@ chmod +x /usr/sbin/rockpool
 cp dependencies/rockpool.png /usr/share/pixmaps/
 cp dependencies/rockpool.desktop /usr/share/applications/
 
-printf "All done! Time to set sail.\n"
-printf "Rebbot your Pi and enjoy Flotilla!\n"
+printf "\nAll done! Time to set sail.\n"
 
 exit 0
