@@ -2,39 +2,87 @@
 
 HOME=/home/$SUDO_USER
 
+raspbian_old () {
+    DIST_CHK=$(cat /etc/os-release | grep "wheezy")
+
+    if [ "" == "$DIST_CHK" ];then
+        false
+    else
+        true
+    fi
+}
+
+apt_pkg_req () {
+    APT_CHK=$(dpkg-query -W --showformat='${Status}\n' $1|grep "install ok installed")
+
+    if [ "" == "$APT_CHK" ]; then
+        true
+    else
+        false
+    fi
+}
+
 if [ $(id -u) -ne 0 ]; then
-  printf "Install must be run as root. Try 'sudo ./install'\n"
-  exit 1
+    printf "Install must be run as root. Try 'sudo ./install'\n"
+    exit 1
 fi
 
 printf "Installing dependencies...\n"
-cd dependencies
-bash install
-cd ..
+
+if ! raspbian_old; then
+    if apt_pkg_req "libboost-system1.55.0"; then
+        printf "Updating package indexes..."
+        sudo apt-get update
+        sudo apt-get --yes --force-yes install libboost-system1.55.0
+    fi
+else
+    if apt_pkg_req "libboost-system1.50.0"; then
+        printf "Updating package indexes..."
+        sudo apt-get update
+        sudo apt-get --yes --force-yes install libboost-system1.50.0
+    fi
+fi
+
+if [ -f /usr/local/lib/libserialport.so.0.0.0 ]; then
+    printf "Dependencies already installed. Updating...\n"
+fi
+
+cp ./dependencies/libs/libserialport* /usr/local/lib/
+
+if [ ! -f /usr/local/lib/libserialport.so.0 ]; then
+    ln -s /usr/local/lib/libserialport.so.0.0.0 /usr/local/lib/libserialport.so.0
+fi
+
+if [ ! -f /usr/local/lib/libserialport.so ]; then
+    ln -s /usr/local/lib/libserialport.so.0.0.0 /usr/local/lib/libserialport.so
+fi
+
+chown root:staff /usr/local/lib/libserialport*
+ldconfig
 
 if [ ! -f /usr/bin/flotilla ]; then
-
-  printf "Installing Flotilla daemon...\n"
-  cp flotilla /usr/bin/flotilla
-
+    printf "Installing Flotilla daemon...\n"
+    if ! raspbian_old; then
+        cp flotilla /usr/bin/flotilla
+    else
+        cp flotilla-wheezy /usr/bin/flotilla
+    fi
 else
-
-  printf "Flotilla already installed. Updating...\n"
-  cp flotilla /usr/bin/flotilla
-
-fi;
+    printf "Flotilla already installed. Updating...\n"
+    if raspbian_new; then
+        cp flotilla /usr/bin/flotilla
+    else
+        cp flotilla-wheezy /usr/bin/flotilla
+    fi
+fi
 
 if [ ! -f $HOME/.config/autostart/flotilla.desktop ]; then
-
-  printf "Setting up autostart...\n"
-  mkdir -p $HOME/.config/autostart
-  cp dependencies/flotilla.desktop $HOME/.config/autostart/
-
+    printf "Setting up autostart...\n"
+    mkdir -p $HOME/.config/autostart
+    cp dependencies/flotilla.desktop $HOME/.config/autostart/
 else
-
-  printf "Autostart already configured. Updating...\n"
-  cp dependencies/flotilla.desktop $HOME/.config/autostart/
-
+    printf "Autostart already configured. Updating...\n"
+    cp dependencies/flotilla.desktop $HOME/.config/autostart/
 fi
 
 chown -R $SUDO_USER:pi $HOME/.config
@@ -48,3 +96,6 @@ cp dependencies/rockpool.png /usr/share/pixmaps/
 cp dependencies/rockpool.desktop /usr/share/applications/
 
 printf "All done! Time to set sail.\n"
+printf "Rebbot your Pi and enjoy Flotilla!\n"
+
+exit 0
