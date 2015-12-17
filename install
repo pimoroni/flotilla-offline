@@ -96,5 +96,6 @@ cp dependencies/rockpool.png /usr/share/pixmaps/
 cp dependencies/rockpool.desktop /usr/share/applications/
 
 printf "All done! Time to set sail.\n"
+printf "Rebbot your Pi and enjoy Flotilla!\n"
 
 exit 0
