@@ -2,13 +2,13 @@
 
 HOME=/home/$SUDO_USER
 
-raspbian_new () {
-    DIST_CHK=$(lsb_release -a | grep "jessie")
+raspbian_old () {
+    DIST_CHK=$(cat /etc/os-release | grep "wheezy")
 
     if [ "" == "$DIST_CHK" ];then
-        false
-    else
         true
+    else
+        false
     fi
 }
 
@@ -24,7 +24,7 @@ cd ..
 
 if [ ! -f /usr/bin/flotilla ]; then
     printf "Installing Flotilla daemon...\n"
-    if raspbian_new; then
+    if ! raspbian_old; then
         cp flotilla /usr/bin/flotilla
     else
         cp flotilla-wheezy /usr/bin/flotilla
@@ -34,7 +34,7 @@ else
     if raspbian_new; then
         cp flotilla /usr/bin/flotilla
     else
-        cp flotilla-wheezy /usr/bin/flotillafi
+        cp flotilla-wheezy /usr/bin/flotilla
     fi
 fi
 
