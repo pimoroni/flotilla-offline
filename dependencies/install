@@ -1,5 +1,15 @@
 #!/bin/bash
 
+raspbian_new () {
+    DIST_CHK=$(lsb_release -a | grep "jessie")
+
+    if [ "" == "$DIST_CHK" ];then
+        false
+    else
+        true
+    fi
+}
+
 apt_pkg_req () {
     APT_CHK=$(dpkg-query -W --showformat='${Status}\n' $1|grep "install ok installed")
 
@@ -15,10 +25,18 @@ if [ $(id -u) -ne 0 ]; then
   exit 1
 fi
 
-if apt_pkg_req "libboost-system1.55.0"; then
-    printf "Updating package indexes..."
-    sudo apt-get update
-    sudo apt-get --yes --force-yes install libboost-system1.55.0
+if raspbian_new; then
+    if apt_pkg_req "libboost-system1.55.0"; then
+        printf "Updating package indexes..."
+        sudo apt-get update
+        sudo apt-get --yes --force-yes install libboost-system1.55.0
+    fi
+else
+    if apt_pkg_req "libboost-system1.50.0"; then
+        printf "Updating package indexes..."
+        sudo apt-get update
+        sudo apt-get --yes --force-yes install libboost-system1.50.0
+    fi
 fi
 
 if [ -f /usr/local/lib/libserialport.so.0.0.0 ]; then
