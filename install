@@ -69,7 +69,7 @@ if [ ! -f /usr/bin/flotilla ]; then
     fi
 else
     printf "Flotilla already installed. Updating...\n"
-    if raspbian_new; then
+    if raspbian_old; then
         cp flotilla /usr/bin/flotilla
     else
         cp flotilla-wheezy /usr/bin/flotilla
