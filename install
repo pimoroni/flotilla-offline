@@ -6,9 +6,9 @@ raspbian_old () {
     DIST_CHK=$(cat /etc/os-release | grep "wheezy")
 
     if [ "" == "$DIST_CHK" ];then
-        true
-    else
         false
+    else
+        true
     fi
 }
 
@@ -20,6 +20,7 @@ apt_pkg_req () {
     else
         false
     fi
+}
 
 if [ $(id -u) -ne 0 ]; then
     printf "Install must be run as root. Try 'sudo ./install'\n"
@@ -46,7 +47,7 @@ if [ -f /usr/local/lib/libserialport.so.0.0.0 ]; then
     printf "Dependencies already installed. Updating...\n"
 fi
 
-cp /dependencies/libs/libserialport* /usr/local/lib/
+cp ./dependencies/libs/libserialport* /usr/local/lib/
 
 if [ ! -f /usr/local/lib/libserialport.so.0 ]; then
     ln -s /usr/local/lib/libserialport.so.0.0.0 /usr/local/lib/libserialport.so.0
@@ -95,3 +96,5 @@ cp dependencies/rockpool.png /usr/share/pixmaps/
 cp dependencies/rockpool.desktop /usr/share/applications/
 
 printf "All done! Time to set sail.\n"
+
+exit 0
