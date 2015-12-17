@@ -76,6 +76,16 @@ else
     fi
 fi
 
+if [ ! -f /etc/init.d/flotillad ]; then
+    printf "Setting up init script...\n"
+    cp dependencies/flotillad /etc/init.d/
+    /etc/init.d/flotillad start
+else
+    printf "Init script already on system. Updating...\n"
+    cp dependencies/flotillad /etc/init.d/
+    /etc/init.d/flotillad restart
+fi
+
 if [ ! -f $HOME/.config/autostart/flotilla.desktop ]; then
     printf "Setting up autostart...\n"
     mkdir -p $HOME/.config/autostart
