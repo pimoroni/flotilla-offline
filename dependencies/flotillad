@@ -5,7 +5,7 @@
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Starts flotilla deamon at boot time
+# Short-Description: Starts flotilla daemon at boot time
 # Description:       Manages the flotilla daemon and serves docks
 ### END INIT INFO
 
@@ -15,7 +15,7 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="Flotilla server"
 NAME=flotilla
-DAEMON=/usr/sbin/$NAME
+DAEMON=/usr/bin/$NAME
 DAEMON_ARGS="--options args"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
