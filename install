@@ -1,5 +1,8 @@
 #!/bin/bash
 
+pkgdeplist7=( "daemon" "libboost-system1.50.0" ) # list of the dependencies for Wheezy
+pkgdeplist8=( "daemon" "libboost-system1.55.0" ) # list of the dependencies for Jessie
+
 HOME=/home/$SUDO_USER
 
 raspbian_old () {
@@ -29,22 +32,49 @@ fi
 
 printf "Installing dependencies...\n"
 
+updatedb=false
+
 if ! raspbian_old; then
-    if apt_pkg_req "libboost-system1.55.0"; then
-        printf "Updating package indexes..."
+    for pkgdep in ${pkgdeplist8[@]}
+        do if apt_pkg_req "$pkgdep" ; then
+            updatedb=true
+        fi
+        done
+
+    if $updatedb ; then
+        echo ""
+        echo "Updating package indexes..."
         sudo apt-get update
-        sudo apt-get --yes --force-yes install libboost-system1.55.0
     fi
+
+    for pkgdep in ${pkgdeplist8[@]}
+        do echo "Checking for dependencies..."
+        if apt_pkg_req "$pkgdep" ; then
+            sudo apt-get --yes --force-yes install "$pkgdep"
+        fi
+        done
 else
-    if apt_pkg_req "libboost-system1.50.0"; then
-        printf "Updating package indexes..."
+    for pkgdep in ${pkgdeplist7[@]}
+        do if apt_pkg_req "$pkgdep" ; then
+            updatedb=true
+        fi
+        done
+    if $updatedb ; then
+        echo ""
+        echo "Updating package indexes..."
         sudo apt-get update
-        sudo apt-get --yes --force-yes install libboost-system1.50.0
     fi
+
+    for pkgdep in ${pkgdeplist7[@]}
+        do echo "Checking for dependencies..."
+        if apt_pkg_req "$pkgdep" ; then
+            sudo apt-get --yes --force-yes install "$pkgdep"
+        fi
+        done
 fi
 
 if [ -f /usr/local/lib/libserialport.so.0.0.0 ]; then
-    printf "Dependencies already installed. Updating...\n"
+    printf "libserialport already installed. Updating...\n"
 fi
 
 cp ./dependencies/libs/libserialport* /usr/local/lib/
