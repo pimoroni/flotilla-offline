@@ -42,13 +42,12 @@ if ! raspbian_old; then
         done
 
     if $updatedb ; then
-        echo ""
-        echo "Updating package indexes..."
+        printf "\nUpdating package indexes..."
         sudo apt-get update
     fi
 
     for pkgdep in ${pkgdeplist8[@]}
-        do echo "Checking for dependencies..."
+        do printf "Checking for dependencies..."
         if apt_pkg_req "$pkgdep" ; then
             sudo apt-get --yes --force-yes install "$pkgdep"
         fi
@@ -60,13 +59,12 @@ else
         fi
         done
     if $updatedb ; then
-        echo ""
-        echo "Updating package indexes..."
+        printf "\nUpdating package indexes..."
         sudo apt-get update
     fi
 
     for pkgdep in ${pkgdeplist7[@]}
-        do echo "Checking for dependencies..."
+        do printf "Checking for dependencies..."
         if apt_pkg_req "$pkgdep" ; then
             sudo apt-get --yes --force-yes install "$pkgdep"
         fi
