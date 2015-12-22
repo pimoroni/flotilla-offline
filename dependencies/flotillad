@@ -15,13 +15,13 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="Flotilla Server"
 NAME=flotillad
-DAEMON_CMD=/usr/bin/flotilla
+DAEMON=/usr/bin/flotilla
 PIDFILE=/var/run/$NAME.pid
 LOGFILE=/var/log/$NAME.log
 SCRIPTNAME=/etc/init.d/$NAME
 
 # Exit if the package is not installed
-[ -x "$DAEMON_CMD" ] || exit 0
+[ -x "$DAEMON" ] || exit 0
 
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
@@ -40,7 +40,7 @@ SCRIPTNAME=/etc/init.d/$NAME
 do_start()
 {
 	if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE"); then
-		echo 'Service already ru nning' >&2
+		echo 'Service already running' >&2
 		return 1
 	fi
 	echo 'Starting...' >&2
@@ -79,7 +79,7 @@ case "$1" in
 	esac
 	;;
   status)
-	status_of_proc "$DAEMON_CMD" "$NAME" && exit 0 || exit $?
+	status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
 	;;
   restart|force-reload)
 	log_daemon_msg "Restarting $DESC" "$NAME"

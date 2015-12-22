@@ -1,7 +1,7 @@
 #!/bin/bash
 
-pkgdeplist7=( "daemon" "libboost-system1.50.0" "libboost-filesystem1.50.0" "libboost-program-options1.50.0" ) # list of the dependencies for Wheezy
-pkgdeplist8=( "daemon" "libboost-system1.55.0" "libboost-filesystem.1.55.0" "libboost-program-options1.55.0" ) # list of the dependencies for Jessie
+pkgdeplist7=( "libboost-system1.50.0" "libboost-filesystem1.50.0" "libboost-program-options1.50.0" ) # list of the dependencies for Wheezy
+pkgdeplist8=( "libboost-system1.55.0" "libboost-filesystem.1.55.0" "libboost-program-options1.55.0" ) # list of the dependencies for Jessie
 
 HOME=/home/$SUDO_USER
 
