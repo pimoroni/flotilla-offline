@@ -123,12 +123,7 @@ else
 fi
 
 if [ ! -f $HOME/.config/autostart/flotilla.desktop ]; then
-    printf "Setting up autostart...\n"
-    mkdir -p $HOME/.config/autostart
-    cp dependencies/flotilla.desktop $HOME/.config/autostart/
-else
-    printf "Autostart already configured. Updating...\n"
-    cp dependencies/flotilla.desktop $HOME/.config/autostart/
+    rm $HOME/.config/autostart/flotilla.desktop
 fi
 
 chown -R $SUDO_USER:pi $HOME/.config
