@@ -1,9 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Type=Application
-Name=Flotilla
-Comment=
-Exec=flotilla
-StartupNotify=false
-Terminal=true
-Hidden=false
