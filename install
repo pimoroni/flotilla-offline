@@ -30,6 +30,11 @@ if [ $(id -u) -ne 0 ]; then
     exit 1
 fi
 
+if [ -f $HOME/.config/autostart/flotilla.desktop ]; then
+    printf "Removing redundant file $HOME/.config/autostart/flotilla.desktop\n"
+    rm -f $HOME/.config/autostart/flotilla.desktop
+fi
+
 printf "Installing dependencies...\n"
 
 updatedb=false
@@ -121,12 +126,6 @@ else
     update-rc.d flotillad defaults
     /etc/init.d/flotillad restart &
 fi
-
-if [ ! -f $HOME/.config/autostart/flotilla.desktop ]; then
-    rm -f $HOME/.config/autostart/flotilla.desktop
-fi
-
-chown -R $SUDO_USER:pi $HOME/.config
 
 printf "Installing Rockpool...\n"
 
