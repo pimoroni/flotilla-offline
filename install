@@ -2,6 +2,7 @@
 
 pkgdeplist7=( "libboost-system1.50.0" "libboost-filesystem1.50.0" "libboost-program-options1.50.0" ) # list of the dependencies for Wheezy
 pkgdeplist8=( "libboost-system1.50.0" "libboost-filesystem1.50.0" "libboost-program-options1.50.0" ) # list of the dependencies for Jessie
+pkgdeplist8=( "libboost-system1.58.0" "libboost-filesystem1.58.0" "libboost-program-options1.58.0" ) # list of the dependencies for Stretch
 
 HOME=/home/$SUDO_USER
 
