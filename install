@@ -38,7 +38,7 @@ printf "Installing dependencies...\n"
 updatedb=false
 
 case "$RELEASE" in
-"9.0"|"9.1")
+"9.0" | "9.1")
     printf "Detected Raspbian Stretch...\n"
     pkgdeplist=$pkgdeplist9
     flotilla_binary="flotilla-stretch"
@@ -55,7 +55,7 @@ case "$RELEASE" in
     ;;
 *)
     printf "Unsupported version of Raspbian!\n"
-    exit(1)
+    exit 1
     ;;
 esac
 
