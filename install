@@ -73,7 +73,7 @@ fi
 
 for pkgdep in ${pkgdeplist[@]}
 do
-    printf "Checking for dependencies...\n"
+    printf "Checking for $pkgdep...\n"
     if apt_pkg_req "$pkgdep" ; then
         sudo apt-get --yes --force-yes install "$pkgdep"
     fi
