@@ -40,17 +40,17 @@ updatedb=false
 case "$RELEASE" in
 "9.0" | "9.1")
     printf "Detected Raspbian Stretch...\n"
-    pkgdeplist=$pkgdeplist9
+    pkgdeplist=${pkgdeplist9[@]}
     flotilla_binary="flotilla-stretch"
     ;;
 "8.0")
     printf "Detected Raspbian Jessie...\n"
-    pkgdeplist=$pkgdeplist8
+    pkgdeplist=${pkgdeplist8[@]}
     flotilla_binary="flotilla"
     ;;
 "8.0")
     printf "Detected Raspbian Wheezy...\n"
-    pkgdeplist=$pkgdeplist7
+    pkgdeplist=${pkgdeplist7[@]}
     flotilla_binary="flotilla-wheezy"
     ;;
 *)
@@ -60,10 +60,11 @@ case "$RELEASE" in
 esac
 
 for pkgdep in ${pkgdeplist[@]}
-    do if apt_pkg_req "$pkgdep" ; then
+do
+    if apt_pkg_req "$pkgdep" ; then
         updatedb=true
     fi
-    done
+done
 
 if $updatedb ; then
     printf "\nUpdating package indexes..."
@@ -71,11 +72,12 @@ if $updatedb ; then
 fi
 
 for pkgdep in ${pkgdeplist[@]}
-    do printf "Checking for dependencies...\n"
+do
+    printf "Checking for dependencies...\n"
     if apt_pkg_req "$pkgdep" ; then
         sudo apt-get --yes --force-yes install "$pkgdep"
     fi
-    done
+done
 
 if [ -f /usr/local/lib/libserialport.so.0.0.0 ]; then
     printf "libserialport already installed. Updating...\n"
