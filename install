@@ -5,16 +5,8 @@ pkgdeplist8=( "libboost-system1.50.0" "libboost-filesystem1.50.0" "libboost-prog
 pkgdeplist9=( "libboost-system1.58.0" "libboost-filesystem1.58.0" "libboost-program-options1.58.0" ) # list of the dependencies for Stretch
 
 HOME=/home/$SUDO_USER
-
-raspbian_old () {
-    DIST_CHK=$(cat /etc/os-release | grep "wheezy")
-
-    if [ "" == "$DIST_CHK" ];then
-        false
-    else
-        true
-    fi
-}
+RELEASE=$(lsb_release -sr)
+DIST=$(lsb_release -si)
 
 apt_pkg_req () {
     APT_CHK=$(dpkg-query -W --showformat='${Status}\n' $1|grep "install ok installed")
@@ -31,6 +23,11 @@ if [ $(id -u) -ne 0 ]; then
     exit 1
 fi
 
+if [ ! "$DIST" == "Raspbian" ]; then
+    printf "This installer is only intended for Raspbian\n"
+    exit 1
+fi
+
 if [ -f $HOME/.config/autostart/flotilla.desktop ]; then
     printf "Removing redundant file $HOME/.config/autostart/flotilla.desktop\n"
     rm -f $HOME/.config/autostart/flotilla.desktop
@@ -40,42 +37,41 @@ printf "Installing dependencies...\n"
 
 updatedb=false
 
-if ! raspbian_old; then
-    for pkgdep in ${pkgdeplist8[@]}
-        do if apt_pkg_req "$pkgdep" ; then
-            updatedb=true
-        fi
-        done
+case "$RELEASE" in
+"9.0"*)
+    printf "Detected Raspbian Stretch...\n"
+    pkgdeplist=$pkgdeplist9
+    flotilla_binary="flotilla-stretch"
+    ;;
+"8.0"*)
+    printf "Detected Raspbian Jessie...\n"
+    pkgdeplist=$pkgdeplist8
+    flotilla_binary="flotilla"
+    ;;
+"8.0"*)
+    printf "Detected Raspbian Wheezy...\n"
+    pkgdeplist=$pkgdeplist7
+    flotilla_binary="flotilla-wheezy"
+    ;;
+esac
 
-    if $updatedb ; then
-        printf "\nUpdating package indexes..."
-        sudo apt-get update
+for pkgdep in ${pkgdeplist[@]}
+    do if apt_pkg_req "$pkgdep" ; then
+        updatedb=true
     fi
+    done
 
-    for pkgdep in ${pkgdeplist8[@]}
-        do printf "Checking for dependencies...\n"
-        if apt_pkg_req "$pkgdep" ; then
-            sudo apt-get --yes --force-yes install "$pkgdep"
-        fi
-        done
-else
-    for pkgdep in ${pkgdeplist7[@]}
-        do if apt_pkg_req "$pkgdep" ; then
-            updatedb=true
-        fi
-        done
-    if $updatedb ; then
-        printf "\nUpdating package indexes..."
-        sudo apt-get update
-    fi
-
-    for pkgdep in ${pkgdeplist7[@]}
-        do printf "Checking for dependencies...\n"
-        if apt_pkg_req "$pkgdep" ; then
-            sudo apt-get --yes --force-yes install "$pkgdep"
-        fi
-        done
+if $updatedb ; then
+    printf "\nUpdating package indexes..."
+    sudo apt-get update
 fi
+
+for pkgdep in ${pkgdeplist[@]}
+    do printf "Checking for dependencies...\n"
+    if apt_pkg_req "$pkgdep" ; then
+        sudo apt-get --yes --force-yes install "$pkgdep"
+    fi
+    done
 
 if [ -f /usr/local/lib/libserialport.so.0.0.0 ]; then
     printf "libserialport already installed. Updating...\n"
@@ -96,23 +92,12 @@ ldconfig
 
 if [ ! -f /usr/bin/flotilla ]; then
     printf "Installing Flotilla daemon...\n"
-    if ! raspbian_old; then
-        cp flotilla /usr/bin/flotilla
-        chmod +x /usr/bin/flotilla
-    else
-        cp flotilla-wheezy /usr/bin/flotilla
-        chmod +x /usr/bin/flotilla
-    fi
 else
     printf "Flotilla already installed. Updating...\n"
-    if ! raspbian_old; then
-        cp flotilla /usr/bin/flotilla
-        chmod +x /usr/bin/flotilla
-    else
-        cp flotilla-wheezy /usr/bin/flotilla
-        chmod +x /usr/bin/flotilla
-    fi
 fi
+
+cp $flotilla_binary /usr/bin/flotilla
+chmod +x /usr/bin/flotilla
 
 if [ ! -f /etc/init.d/flotillad ]; then
     printf "Setting up init script...\n"
