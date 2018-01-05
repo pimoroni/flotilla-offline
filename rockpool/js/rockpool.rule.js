@@ -8,6 +8,13 @@ rockpool.rule = function (parent, widget_index) {
             source = JSON.parse(source);
         }
 
+        //console.log("Setting input handler", source.input.key, source.input.option);
+
+
+        if( !rockpool.inputs[source.input.key] ){
+            rockpool.newInactiveModuleFromKey(source.input.key);
+        }
+
         this.setInputHandler( source.input.key, source.input.option > -1 ? source.input.option : null );
 
         for(var x = 0; x < source.converters.length; x++){
@@ -17,6 +24,10 @@ rockpool.rule = function (parent, widget_index) {
         }
 
         if( !this.getOutput().isComparator() ){
+
+            if( !rockpool.outputs[source.output.key] ){
+                rockpool.newInactiveModuleFromKey(source.output.key);
+            }
 
             this.setOutputHandler( source.output.key, source.output.option > -1 ? source.output.option : null );
         
@@ -36,13 +47,15 @@ rockpool.rule = function (parent, widget_index) {
         }
 
         var o = {
+            enabled: this.enabled,
             input: {  
                 key:    this.input.handler_key,
-                option: this.input.option_index
+                option: this.input.options ? this.input.option_index : -1,
+                value:  this.input.getValue()
             },
             output:{ 
                 key:    this.output.handler_key,
-                option: this.output.option_index
+                option: this.output.options ? this.output.option_index : -1
             },
             converters: []
         }
@@ -110,8 +123,18 @@ rockpool.rule = function (parent, widget_index) {
 
     /*
         Set the handler object for a converter/comparator
+        Or an input/output if idx = input or idx = output
     */
-    this.setHandler = function(idx, key){
+    this.setHandler = function(idx, key, option, value){
+        if(idx == 'input'){
+            this.setInputHandler(key, option, value)
+            return;
+        }
+        if(idx == 'output'){
+            this.setOutputHandler(key, option)
+            return;
+        }
+
         var converter = this.getConverter(idx)
         if(!converter) return false; // Converter out of range
 
@@ -133,12 +156,12 @@ rockpool.rule = function (parent, widget_index) {
         this.runEventHandler('on_set_converter' + idx + '_handler');
     }
 
-    this.setInputHandler = function(key, option) {
+    this.setInputHandler = function(key, option, value) {
 
         this.getInput().setHandler(key);
 
-        if( typeof( option ) === "number" ){
-            this.getInput().setOptions(option);
+        if( typeof( option ) === "number" && this.getInput().hasOptions() ){
+            this.getInput().setOptions(option,value);
         }
         else
         {
@@ -148,6 +171,7 @@ rockpool.rule = function (parent, widget_index) {
         if(typeof(this.getInput().handler.init) === 'function'){
             this.getInput().handler.init(this)
         }
+        this.getInput().update(true);
         this.render();
 
         this.runEventHandler('on_set_input_handler');
@@ -166,17 +190,25 @@ rockpool.rule = function (parent, widget_index) {
         output.setHandler(key);
 
         //output.handler = handler
-        if( typeof(option) === "number" ){
+        if( typeof(option) === "number" && output.hasOptions() ){
             output.setOptions(option);
         }
         else
         {
             output.options = null
         }
-        output.update()
+        output.update(true)
         this.render();
 
         this.runEventHandler('on_set_output_handler');
+    }
+
+    this.updateDom = function(){
+        if(this.input) this.input.dom_update_needed = true;
+        this.converters.forEach(function(converter, idx){
+            converter.dom_update_needed = true;
+        })
+        if(this.output) this.output.dom_update_needed = true;
     }
 
     this.getInput = function() {return this.input}
@@ -185,17 +217,28 @@ rockpool.rule = function (parent, widget_index) {
 
     this.getConverter = function(idx) {return this.converters[idx]}
 
-    this.updateLabels = function() {
-        this.getInput().update();
+    this.updateLabels = function(module_key) {
+        // module_key is the module which has triggered the update
+        module_key = module_key || "NONE";
+
+        if(this.isChild() && this.getOutput().handler.inheritFormatting){
+            this.getInput().inheritFromModule = this.parent.getInput();
+        }
+        else
+        {
+            this.getInput().inheritFromModule = null;
+        }
+
+        this.getInput().update(this.getInput().handler_key.substr(0,module_key.length) === module_key);
+
         this.converters.forEach(function(converter, idx){
                 converter.update();
             }
         )
         // Avoid recursion!
         if( !this.getOutput().isComparator() ){
-            this.getOutput().update();
+            this.getOutput().update(this.getOutput().handler_key.substr(0,module_key.length) === module_key);
         }
-        
     }
 
     this.kill = function () {
@@ -211,7 +254,7 @@ rockpool.rule = function (parent, widget_index) {
         this.converters.push( new rockpool.widget( 'converter', this, key ) )
     }
 
-    this.render = function () {
+    this.render = function (fn_callback) {
         if( this.deleted ) return false;
         if( !this.dom )
         {
@@ -225,9 +268,10 @@ rockpool.rule = function (parent, widget_index) {
 
             this.dom.data('obj',this);
 
-            this.dom_enabled = $('<div class="pure-u-1-12 center block toggle"></div>').appendTo(this.dom);
+            this.dom_enabled = $('<div class="toggle"></div>').appendTo(this.dom);
 
-            this.input = this.input ? this.input : new rockpool.widget( 'input', this, 'low' )
+            this.input = this.input ? this.input : new rockpool.widget( 'input', this, 'none' );
+
             var i = this.converter_count
             while(i--){
                 this.addConverter('noop')
@@ -235,15 +279,21 @@ rockpool.rule = function (parent, widget_index) {
             this.output = this.output ? this.output : new rockpool.widget( 'output', this, 'none' )
 
             if( !this.isChild() ){
-                this.dom_delete =  $('<div class="pure-u-1-12 center block delete"></div>').appendTo(this.dom)
-                $('<i class="sprite sprite-channel-on"></i>').appendTo(this.dom_enabled);
-                $('<i class="sprite sprite-channel-delete"></i>').appendTo(this.dom_delete);
+                this.dom_delete =  $('<div class="delete"></div>').appendTo(this.dom)
+                $('<i></i>').appendTo(this.dom_enabled);
+                $('<i></i>').appendTo(this.dom_delete);
             }
 
             if( this.isChild() ){
 
                 var potential_position = this.parent.dom;
                 var skip = this.widget_index;
+
+                // Fix for correct placement of widget 3 (index 2) child rules
+                // when we already have 4 rules merging into one.
+                if(this.widget_index == 2){
+                    skip = 3;
+                }
 
                 while(skip-- && potential_position.next('.rule').length > 0){
                     if( potential_position.next('.rule').data('obj').widget_index > widget_index ){
@@ -260,12 +310,16 @@ rockpool.rule = function (parent, widget_index) {
             {
                 this.group.append(this.dom);
 
-                this.dom_delete.on('click',function(){
+                this.dom_delete.on('click',function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
                     var rule = $(this).parent().data('obj') || $(this).parent().parent().data('obj') ;
                     rule.kill();
                 })
 
-                this.dom_enabled.on('click',function(){
+                this.dom_enabled.on('click',function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
                     var rule = $(this).parent().data('obj') || $(this).parent().parent().data('obj') ;
                     rule.toggle();
                 })
@@ -274,6 +328,10 @@ rockpool.rule = function (parent, widget_index) {
         }
 
         this.updateLabels();
+
+        if(typeof fn_callback === "function"){
+            fn_callback();
+        }
     }
 
     this.redrawChart = function () {
@@ -295,6 +353,7 @@ rockpool.rule = function (parent, widget_index) {
         if( this.deleted ) return false;
         if( !this.enabled ) { return false; }
         if( !this.getInput() || !this.getOutput() ) { return false; }
+        if( this.getInput().handler.name == "None" ) { return false; }
 
         var value = this.getInput().get();
         this.converters.forEach( function(converter, idx){
@@ -330,8 +389,8 @@ rockpool.rule = function (parent, widget_index) {
         }
     }
 
-    this.start = function(){
-        this.render();
+    this.start = function(fn_callback){
+        this.render(fn_callback);
     }
 
     this.enabled = true;

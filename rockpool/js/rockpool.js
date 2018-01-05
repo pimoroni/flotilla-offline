@@ -1,10 +1,12 @@
 var rockpool = rockpool || {};
 
-rockpool.active_modules = [];
+rockpool.active_modules = {};
 rockpool.rules = [];
 rockpool.guid = 0;
 rockpool.last_time = 0;
 rockpool.tick_length = 100; // 100ms per tick
+rockpool.debug_enabled = false;
+rockpool.enable_advanced = false;
 
 rockpool.palette = {
     red: '#D94D15',
@@ -26,10 +28,20 @@ rockpool.category = {
     keyboard: 'Keyboard',
     variables: 'Variables',
     empty: 'Empty',
-    general: 'General'
+    general: 'General',
+    maths: 'Maths',
+    modify: 'Modify',
+    compare: 'Compare'
 };
 
 rockpool.guid = 0;
+
+if (!String.prototype.startsWith) {
+    String.prototype.startsWith = function(searchString, position){
+      position = position || 0;
+      return this.substr(position, searchString.length) === searchString;
+  };
+}
 
 (function() {
     var lastTime = 0;
@@ -60,6 +72,10 @@ rockpool.useAnimationFrame = false;
 
 window.requestAnimationFrame(function(){rockpool.useAnimationFrame = true})
 
+rockpool.channelToNumber = function(channel){
+    return channel + 1;
+}
+
 rockpool.getGUID = function(){
     rockpool.guid++;
     return rockpool.guid;
@@ -80,12 +96,12 @@ rockpool.forRules = function(fn) {
     rockpool.rules = rockpool.rules.filter(function(rule){
         return !rule.deleted;
     });
+    
     if(rockpool.rules.length == 0) return false;
 
-    var total = rockpool.rules.length;
-
-    while(total--){
-        fn(rockpool.rules[total])
+    for(var idx = 0; idx < rockpool.rules.length; idx++)
+    {
+        fn(rockpool.rules[idx])
     }
 }
 
@@ -95,11 +111,14 @@ rockpool.clear = function(){
     })
 }
 
-rockpool.updateActiveWidgets = function () {
-    rockpool.forRules(function(r){r.updateLabels()})
+rockpool.updateActiveWidgets = function (module_key) {
+    rockpool.forRules(function(r){r.updateLabels(module_key)})
 }
 
 rockpool.run = function () {
+    if(rockpool.running) return;
+    rockpool.running = true;
+    
     rockpool.generatePalette('input');
     rockpool.generatePalette('output');
     rockpool.generatePalette('converter');
@@ -108,7 +127,7 @@ rockpool.run = function () {
     if(rockpool.useAnimationFrame){
         rockpool.renderLoop();
     }
-    setInterval(rockpool.updateLoop, 100);
+    setInterval(rockpool.updateLoop, 50);
 }
 
 rockpool.getTime = function () {
@@ -137,10 +156,7 @@ rockpool.renderLoop = function () {
 
         rockpool.forRules(function(r){
             r.redrawChart();
-            //r.updateVisibility();
         })
-
-        //rockpool.sync();
 
     }
 }
@@ -170,32 +186,80 @@ rockpool.update = function () {
 }
 
 rockpool.sync = function() {
-    for( module in rockpool.active_modules ){
+    for( var module in rockpool.active_modules ){
         rockpool.active_modules[module].sync();
     }
 }
 
 rockpool.respond = function () {
     rockpool.forRules(function(r){r.respond()})
-    rockpool.positionModal();
 }
 
 rockpool.registerInput = function( host, channel, code, name, handler ) {
-    console.log('Registering input:', [host,code,channel,name]);
-    rockpool.inputs[[host,code,channel,name].join('_')] = handler;
+    if(rockpool.enable_debug){console.log('Registering input:', [host,code,channel,name]);}
+    rockpool.inputs[[host,channel,code,name].join('_')] = handler;
 }
 
 rockpool.registerOutput = function( host, channel, code, name, handler ) {
-    rockpool.outputs[[host,code,channel,name].join('_')] = handler;
+    rockpool.outputs[[host,channel,code,name].join('_')] = handler;
+}
+
+rockpool.newInactiveModuleFromKey = function(key){
+    key = key.split('_');
+    var host_idx = parseInt(key[0]);
+    var channel_idx = parseInt(key[1]);
+    var module_code = key[2];
+    var module = rockpool.getModule(host_idx, channel_idx, module_code);
+    if(module !== false) module.deactivate();
+    return module;
+}
+
+rockpool.getActiveModule = function(host_idx, channel_idx) {
+    var id;
+
+    for(x in rockpool.active_modules){
+        if(x && x.startsWith([host_idx,channel_idx].join('_')) && rockpool.active_modules[x].active){
+            id = x;
+            break;
+        }
+    }
+    if(id == ""){return false;}
+    
+    var module = rockpool.active_modules[id];
+
+    if (!module) {
+        return false;
+    }
+
+    module = rockpool.active_modules[id];
+
+    if( typeof( module ) === 'undefined' ){
+        return false;
+    }
+    
+    return module;
 }
 
 rockpool.getModule = function(host_idx, channel_idx, module_code) {
-    var id = [host_idx,channel_idx,module_code].join('_');
+    var id;
+
+    if(typeof(module_code) === "undefined"){
+        for(x in rockpool.active_modules){
+            if(x && x.startsWith([host_idx,channel_idx].join('_'))){
+                id = x;
+                break;
+            }
+        }
+        if(id == ""){return false;}
+    }
+    else{
+        id = [host_idx,channel_idx,module_code].join('_');
+    }
 
     var module = rockpool.active_modules[id];
 
     if (!module) {
-         if (typeof(rockpool.module_handlers[module_code]) !== "undefined")  {
+         if (module_code && typeof(rockpool.module_handlers[module_code]) !== "undefined")  {
             rockpool.active_modules[id] = new FlotillaModule(rockpool.module_handlers[module_code], host_idx, channel_idx, module_code);
         } else {
             return false;
@@ -214,50 +278,86 @@ rockpool.getModule = function(host_idx, channel_idx, module_code) {
 rockpool.initialize = function(){
     $(window).trigger('resize');
 
-    $('.add-input').on('click',function(){
-        rockpool.add('input')
-    }).find('h2');
-
-    $('.add-output').on('click',function(){
-        rockpool.add('output')
-    }).find('h2');
-
-    $('.add-converter').on('click',function(){
-        rockpool.add('converter')
-    }).find('h2');
-
-    $('.help').on('click',function(){
-        rockpool.prompt($('.help-content').clone().show().on('click',function(){
-
-            $.fancybox.close()
-            $(this).remove()
-
-        }))
-    });
-
-    $('.sprite-icon-load').on('click',function(e){
-        e.preventDefault();
-
-        var load_save = $('<div>').addClass('palette').addClass('saves');
-        load_save.append('<header><h1>Load</h1></header>');
-
-        var saves = $('<div>').addClass('saves').appendTo(load_save);
-
-        saves.append('<ul>').on('click','li',function(e){
-            var file_name = $(this).data('filename');
-            rockpool.loadFromFile(file_name);
+    $('.controls')
+        .on('click','.add-rule',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            rockpool.add('input',function(rule){
+                rockpool.add('output',rule);
+            });
         });
+        /*.on('click','.add-input',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            rockpool.add('input')
+        })
+        .on('click','.add-output',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            rockpool.add('output')
+        })
+        .on('click','.add-conveter',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            rockpool.add('converter')
+        });*/
 
-        for( var x = 0; x < save_list.length; x++ ){
 
-            var file_name = save_list[x];
-            $('<li><span class="icon" style="color: rgb(78, 192, 223);"><img src="css/images/icons/icon-on.png"></span><span class="label">' + file_name + '</span></li>').data('filename',file_name).appendTo(saves.find('ul'));
+    $('.options,.mainnav').on('click','.active',function(e){
+        e.preventDefault();
+        e.stopPropagation();
 
+        var action = $(this).data('action');
+
+        switch(action){
+            case 'help':
+                window.open('http://flotil.la');
+                break;
+            case 'new':
+                new rockpool.rule().start();
+                break;
+            case 'clear':
+                var dom_container = $('<div class="confirm palette"><i class="close"></i><header><h1>are you sure?</h1></header><div class="choices"><p>this will delete all your rules!</p></div>');
+    
+                $('<i class="cancel"></i>').appendTo(dom_container.find('.choices'));
+                $('<i class="confirm"></i>').appendTo(dom_container.find('.choices')).on('click',function(){
+                    rockpool.clear();
+                });
+
+                rockpool.prompt(dom_container);
+                //rockpool.clear();
+                break;
+            case 'load':
+                rockpool.loadDialog();
+                break;
+            case 'dock':
+                rockpool.personalise(rockpool.subscribed_to);
+                //rockpool.manageDock();
+                //rockpool.startDiscovery();
+                break;
+            case 'save':
+                rockpool.saveDialog();
+                break;
         }
 
-        rockpool.prompt(load_save);
+
+        $(this).parents('.options').toggleClass('open');
     });
 
+    /*$('.options .toggle').on('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+
+        $(this).parents('.options').toggleClass('open');
+
+        if(rockpool.saveListLoad().length > 0){
+            $(this).parents('.options').find('.icon-palette div').filter('[data-action="load"]').attr("class","active color-navy");
+        }
+        else
+        {
+            $(this).parents('.options').find('.icon-palette div').filter('[data-action="load"]').attr("class","disabled color-gray");
+        }
+    });*/
 
     /* resize chart canvases when the window resizes */
     $(window).resize(function () {
@@ -266,6 +366,10 @@ rockpool.initialize = function(){
 
     if(window.navigator.standalone){
         document.documentElement.requestFullscreen();
+    }
+
+    window.onbeforeunload = function(){
+        rockpool.disconnect();
     }
 
     FastClick.attach(document.body);
@@ -288,7 +392,20 @@ rockpool.initialize = function(){
         $(this).html( rockpool.languify( $(this).html() ) );
     });
 
-    rockpool.addCommonTargets();
+    //rockpool.addCommonTargets();
+    /*
+    rockpool.addScanTarget('127.0.0.1', 5000);
+    rockpool.addScanTarget('raspberrypi', 5000);
+    rockpool.addScanTarget('raspberrypi.local', 5000);
+
     rockpool.addPreviousTargets();
     rockpool.findHosts();
+    */
+    rockpool.startDiscovery();
+
+    rockpool.on_connect = function(){
+        if(rockpool.rules.length == 0){
+            new rockpool.rule().start();
+        }
+    }
 }
