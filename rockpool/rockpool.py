@@ -4,6 +4,7 @@ import socket
 import SimpleHTTPServer
 import SocketServer
 import webbrowser
+import subprocess
 
 PORT = 8000
 serve = False
@@ -20,7 +21,10 @@ except socket.error:
 
 
 print("Launching Browser")
-webbrowser.open("http://127.0.0.1:{port}".format(port=PORT), new=1, autoraise=True)
+try:
+    subprocess.Popen(["chromium-browser", "http://127.0.0.1:{port}".format(port=PORT)])
+except IOError:
+    webbrowser.open("http://127.0.0.1:{port}".format(port=PORT), new=1, autoraise=True)
 
 if serve:
     httpd.serve_forever()
