@@ -38,7 +38,7 @@ printf "Installing dependencies...\n"
 updatedb=false
 
 case "$RELEASE" in
-"9.0" | "9.1" | "9.2" | "9.3")
+"9.0" | "9.1" | "9.2" | "9.3" | "9.4")
     printf "Detected Raspbian Stretch...\n"
     pkgdeplist=${pkgdeplist9[@]}
     flotilla_binary="flotilla-stretch"
