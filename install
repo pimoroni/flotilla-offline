@@ -3,6 +3,8 @@
 pkgdeplist7=( "libboost-system1.50.0" "libboost-filesystem1.50.0" "libboost-program-options1.50.0" ) # list of the dependencies for Wheezy
 pkgdeplist8=( "libboost-system1.50.0" "libboost-filesystem1.50.0" "libboost-program-options1.50.0" ) # list of the dependencies for Jessie
 pkgdeplist9=( "libboost-system1.58.0" "libboost-filesystem1.58.0" "libboost-program-options1.58.0" "libboost-date-time1.58.0" ) # list of the dependencies for Stretch
+pkgdeplist10=( "libboost-system1.58.0" "libboost-filesystem1.58.0" "libboost-program-options1.58.0" "libboost-date-time1.58.0" ) # list of the dependencies for Buster
+
 
 HOME=/home/$SUDO_USER
 RELEASE=$(lsb_release -sr)
@@ -38,6 +40,11 @@ printf "Installing dependencies...\n"
 updatedb=false
 
 case "$RELEASE" in
+"10")
+    printf "Detected Raspbian Buster...\n"
+    pkgdeplist=${pkgdeplist10[@]}
+    flotilla_binary="flotilla-stretch"
+    ;;
 "9.0" | "9.1" | "9.2" | "9.3" | "9.4" | "9.5" | "9.6" | "9.7" | "9.8" | "9.9")
     printf "Detected Raspbian Stretch...\n"
     pkgdeplist=${pkgdeplist9[@]}
